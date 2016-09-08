@@ -20,6 +20,8 @@ module.exports = {
     semi: [1, 'never'],
     'import/no-extraneous-dependencies': [1, 'never'],
     'no-console': ['error'],
+    'max-len': ['error', {ignoreComments: true, code: 200}],
+    'no-underscore-dangle': ['error', {allowAfterThis: true, allowAfterSuper: true}],
     // 'object-curly-spacing': [1, 'never']
   },
 }

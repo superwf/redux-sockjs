@@ -19,21 +19,12 @@ sockserver.on('connection', conn => {
     conn.write(JSON.stringify({ ok: true, payload: action.payload, uuid: action.uuid }))
   })
 
-  conn.on('end', () => {
-    warn('end')
-  })
-
   conn.on('close', () => {
     warn('closecloseclosecloseclose')
     conn.destroy()
     // clearInterval(timer)
   })
 
-  conn.on('clientError', () => {
-    warn('clientError')
-    conn.destroy()
-    // clearInterval(timer)
-  })
 })
 
 const server = http.createServer((req, res) => {
