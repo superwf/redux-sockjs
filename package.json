@@ -19,7 +19,9 @@
   "author": "superwf@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.14.0",
     "lodash": "^4.15.0",
+    "log4js": "^0.6.38",
     "redux": "^3.5.2",
     "redux-promise": "^0.5.3",
     "sockjs": "^0.3.17",

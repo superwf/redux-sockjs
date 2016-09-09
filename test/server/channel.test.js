@@ -1,45 +1,58 @@
 import Channel from '../../server/channel'
 import EventEmitter from 'events'
+// import stream from 'stream'
 
 describe('server/channel', () => {
+  let server, channel, connection, channelName
+
+  beforeEach(() => {
+    server = new EventEmitter()
+    channelName = 'A'
+    connection = new EventEmitter()
+    connection.write = () => {}
+    channel = new Channel(server, channelName)
+    server.emit('connection', connection)
+  })
 
   it('emit', () => {
-    const emitter = new EventEmitter()
-    const spy = expect.spyOn(emitter, 'emit')
-    const channelA = new Channel(emitter, 'A')
     const data = {abc: 123}
-    channelA.emit(data)
-    expect(spy).toHaveBeenCalledWith({ type: 'channel', channel: 'A', data})
+    const spy = expect.spyOn(channel.emitter, 'emit')
+    channel.emit(data)
+    expect(spy).toHaveBeenCalledWith({ type: 'channel', channel: channelName, data})
   })
 
   it('constructor', () => {
-    const emitter = new EventEmitter()
-    const channel = new Channel(emitter, 'A')
-    expect(channel.identity).toBe('A')
-    expect(channel.emitter).toBe(emitter)
+    expect(channel.identity).toBe(channelName)
+    expect(channel.server).toBe(server)
   })
 
-  it('on data', done => {
-    const emitter = new EventEmitter()
-    const channel = new Channel(emitter, 'A')
-    const data = {type: 'channel', channel: 'A', xxx: 55555}
+  it('ondata', done => {
+    const data = {type: 'channel', channel: channelName, xxx: 55555}
     channel.on('data', message => {
       expect(data).toEqual(message)
       done()
     })
-    emitter.emit('data', data)
+    channel.emitter._emit('data', data)
   })
 
   it('on close and invoke channel destroy', () => {
-    const emitter = new EventEmitter()
-    const channel = new Channel(emitter, 'A')
-    expect(emitter.listeners('data')).toEqual([channel.ondata])
-    expect(emitter.listeners('close')).toEqual([channel.onclose])
+    expect(server.listeners('connection')).toEqual([channel.onconnection])
+    expect(channel.emitter.listeners('data')).toEqual([channel.ondata])
+    expect(channel.emitter.listeners('close')).toEqual([channel.onclose])
     const spy = expect.spyOn(channel, 'destroy').andCallThrough()
-    emitter.emit('close')
+    channel.emitter._emit('close')
     expect(spy).toHaveBeenCalled()
-    expect(emitter.listeners('data')).toEqual([])
-    expect(emitter.listeners('close')).toEqual([])
+    expect(channel.emitter.listeners('data')).toEqual([])
+    expect(channel.emitter.listeners('close')).toEqual([])
   })
 
+  it('_emit invoke super.emit', done => {
+    const evtName = 'xxxxx'
+    const data = {xxx: 12242}
+    channel.on(evtName, msg => {
+      expect(msg).toBe(data)
+      done()
+    })
+    channel._emit(evtName, data)
+  })
 })

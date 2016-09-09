@@ -1,24 +1,28 @@
-import Event from 'events'
-// import pull from 'lodash/pull'
-// import isPlainObject from 'lodash/isPlainObject'
+import EventEmitter from 'events'
+import warn from '../lib/warn'
 
 /* all sockjs should dispatch to instance of this class
  * */
-class Emitter extends Event {
+class Emitter extends EventEmitter {
   constructor(connection) {
     super()
     this.connection = connection
     super.setMaxListeners(100)
-    Emitter.emitters.push(this)
+    // Emitter.emitters.push(this)
 
     connection.on('data', message => {
-      const data = JSON.parse(message)
-      super.emit(data.type, data)
+      try {
+        const data = JSON.parse(message)
+        super.emit('data', data)
+      } catch (e) {
+        warn(e)
+        warn(`${message} can not parse to json`)
+      }
     })
 
     connection.on('close', () => {
-      this.destroy()
       super.emit('close')
+      this.destroy()
     })
   }
 
@@ -28,28 +32,33 @@ class Emitter extends Event {
     this.connection.write(JSON.stringify(data))
   }
 
-  destroy() {
+  _emit(...args) {
+    super.emit(...args)
+  }
+
+  destroy(close = false) {
     this.removeAllListeners()
     this.connection.removeAllListeners()
-    Emitter.removeEmitter(this)
+    if (close) {
+      this.connection.close()
+    }
+    // Emitter.removeEmitter(this)
   }
 }
 
-Emitter.emitters = []
+// Emitter.emitters = []
 
-Emitter.removeEmitter = emitter => {
-  const emitters = Emitter.emitters
-  const index = Emitter.emitters.findIndex(value => value === emitter)
-  if (index > -1) {
-    Emitter.emitters = [...emitters.slice(0, index), ...emitters.slice(index + 1)]
-  }
-}
+// Emitter.removeEmitter = emitter => {
+//   const emitters = Emitter.emitters
+//   const index = Emitter.emitters.findIndex(value => value === emitter)
+//   if (index > -1) {
+//     Emitter.emitters = [...emitters.slice(0, index), ...emitters.slice(index + 1)]
+//   }
+// }
 
-Emitter.clearEmitters = () => {
-  Emitter.emitters = []
-}
-
-// Emitter.channels = {}
+// Emitter.clearEmitters = () => {
+//   Emitter.emitters = []
+// }
 
 export default Emitter
 

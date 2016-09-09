@@ -23,5 +23,6 @@ module.exports = {
     'max-len': ['error', {ignoreComments: true, code: 200}],
     'no-underscore-dangle': ['error', {allowAfterThis: true, allowAfterSuper: true}],
     // 'object-curly-spacing': [1, 'never']
+    'arrow-parens': [2, 'as-needed'],
   },
 }
