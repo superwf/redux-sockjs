@@ -1,8 +1,8 @@
-import Emitter from '../../client/eventEmitter'
+import Emitter from '../../client/emitter'
 import EventEmitter from 'events'
 import noop from 'lodash/noop'
 
-describe('client/eventEmitter', () => {
+describe('client/emitter', () => {
 
   let emitter, socket
   beforeEach(() => {
@@ -22,18 +22,13 @@ describe('client/eventEmitter', () => {
     socket.onopen()
     expect(onopen).toHaveBeenCalled()
     expect(emitter.connection).toBe(socket)
-    expect(emitter.open).toBe(true)
   })
 
-  it('emit', () => {
+  it('send', () => {
     const spy = expect.spyOn(emitter.connection, 'send')
     const data = {xxx: 'sfdsdfdsf'}
-    expect(() => {
-      emitter.emit(data)
-    }).toThrow()
-
     emitter.connection.onopen()
-    emitter.emit(data)
+    emitter.send(data)
     expect(spy).toHaveBeenCalledWith(JSON.stringify(data))
   })
 
@@ -58,13 +53,4 @@ describe('client/eventEmitter', () => {
     expect(emitter.listeners()).toEqual([])
   })
 
-  it('_emit invoke super.emit', done => {
-    const evtName = 'a random evt'
-    const data = {sdfsdf: 121323}
-    emitter.on(evtName, msg => {
-      expect(msg).toBe(data)
-      done()
-    })
-    emitter._emit(evtName, data)
-  })
 })

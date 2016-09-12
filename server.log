@@ -24,3 +24,5 @@
 [2016-09-09 16:57:35.074] [DEBUG] dev - 127.0.0.1 - - "GET /favicon.ico HTTP/1.1" 404 24 "http://localhost:3060/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.101 Safari/537.36"
 [2016-09-09 17:08:31.448] [DEBUG] dev - 127.0.0.1 - - "GET //sockjs-prefix/info HTTP/1.1" 404 32 "" "undefined"
 [2016-09-09 17:08:41.880] [DEBUG] dev - 127.0.0.1 - - "GET //sockjs-prefix/info HTTP/1.1" 404 32 "" "undefined"
+[2016-09-12 15:20:22.283] [DEBUG] dev - 127.0.0.1 - - "GET /sockjs-redux/info HTTP/1.1" 404 30 "" "undefined"
+[2016-09-12 15:20:51.918] [DEBUG] dev - 127.0.0.1 - - "GET /sockjs-redux/info HTTP/1.1" 404 30 "" "undefined"

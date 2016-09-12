@@ -1,15 +1,15 @@
 import EventEmitter from 'events'
-import ReduxChannel from '../../server/reduxChannel'
-import Channel from '../../server/channel'
+import ReduxChannel from '../../client/reduxChannel'
+import Channel from '../../client/channel'
 
-describe('server/reduxChannel', () => {
-  let server, reduxChannel, connection
+describe('client/reduxChannel', () => {
+  let socket, reduxChannel, connection
 
   beforeEach(() => {
-    server = new EventEmitter()
+    socket = new EventEmitter()
     connection = new EventEmitter()
     connection.write = () => {}
-    reduxChannel = new ReduxChannel(server)
+    reduxChannel = new ReduxChannel(socket)
     reduxChannel.emitter.emit('open')
   })
 

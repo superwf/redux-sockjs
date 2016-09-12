@@ -1,60 +1,70 @@
-import EventEmitter from 'events'
-import { makeEmitter } from './eventEmitter'
+// import identity from 'lodash/identity'
+// import EventEmitter from 'events'
+import Emitter from './emitter'
+import generateChannel from '../lib/channel'
+
+export default generateChannel(Emitter)
 
 // multiple channel for single connection
-class Channel extends EventEmitter {
-  /*
-   * @param Object instance of server/eventEmitter
-   * @param String identity, channel name
-   * */
-  constructor(server, identity) {
-    super()
-    this.server = server
-    this.identity = identity
-    this.onconnection = this.onconnection.bind(this)
-    server.on('connection', this.onconnection)
-  }
+// class Channel extends EventEmitter {
+//   /*
+//    * @param Object instance of server/eventEmitter
+//    * @param String channelName, channel name
+//    * */
+//   constructor(socket, channelName) {
+//     if (!channelName) {
+//       throw new Error('channel must has an identity')
+//     }
+//     super()
+//     this.socket = socket
+//     this.channelName = channelName
+//     this._receiveFunc = identity
+//     this.onopen = this.onopen.bind(this)
+//     const emitter = new Emitter(socket)
+//     this.emitter = emitter
+//     emitter.on('open', this.onopen)
+//   }
 
-  onconnection(connection) {
-    const emitter = makeEmitter(connection)
-    this.emitter = emitter
-    this.ondata = this.ondata.bind(this)
-    this.onclose = this.onclose.bind(this)
-    emitter.on('data', this.ondata)
-    emitter.on('close', this.onclose)
-  }
+//   onopen() {
+//     this.ondata = this.ondata.bind(this)
+//     this.onclose = this.onclose.bind(this)
+//     this.emitter.on('data', this.ondata)
+//     this.emitter.on('close', this.onclose)
+//     this.emit('open')
+//   }
 
-  ondata(data) {
-    if (data && data.type === 'channel' && data.channel === this.identity) {
-      super.emit('data', data)
-    }
-    return null
-  }
+//   receive(func) {
+//     this._receiveFunc = func
+//   }
 
-  _emit(...args) {
-    return super.emit(...args)
-  }
+//   ondata(data) {
+//     if (data && data.type === 'channel' && data.channel === this.channelName) {
+//       this._receiveFunc(data.data)
+//     }
+//     return null
+//   }
 
-  onclose() {
-    return this.destroy()
-  }
+//   onclose() {
+//     return this.destroy()
+//   }
 
- /* emit with channel by this.emitter to browser
-  */
-  emit(data) {
-    return this.emitter.emit({ type: 'channel', channel: this.identity, data })
-  }
+//  /* send with channel by this.emitter to browser
+//   */
+//   send(data) {
+//     return this.emitter.send({ type: 'channel', channel: this.channelName, data })
+//   }
 
-  // clear all listeners, free memory
-  destroy() {
-    this.removeAllListeners()
-    this.server.removeListener('connection', this.onconnection)
-    if (this.emitter) {
-      this.emitter.removeListener('data', this.ondata)
-      this.emitter.removeListener('close', this.onclose)
-    }
-    return null
-  }
-}
+//   // clear all listeners, free memory
+//   destroy() {
+//     this.removeAllListeners()
+//     this._receiveFunc = identity
+//     if (this.emitter) {
+//       this.emitter.removeListener('open', this.onopen)
+//       this.emitter.removeListener('data', this.ondata)
+//       this.emitter.removeListener('close', this.onclose)
+//     }
+//     return null
+//   }
+// }
 
-export default Channel
+// export default Channel
