@@ -1,6 +1,6 @@
 import { createStore, combineReducers } from 'redux'
-import startServer from '../../server/startReduxChannel'
-import startClient from '../../client/startReduxChannel'
+import { startServer, startClient } from '../../index'
+// import startClient from '../../client/startReduxChannel'
 
 describe('startReduxChannel for server and client', () => {
   it('emit redux', done => {
@@ -32,7 +32,7 @@ describe('startReduxChannel for server and client', () => {
     }
 
 
-    it.only('client send action', done => {
+    it('client send action', done => {
       const userReducer = (state, action) => {
         if (!state) {
           state = []

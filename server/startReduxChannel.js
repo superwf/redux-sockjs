@@ -8,7 +8,7 @@ export default ({
   port = 3060,
   ip = '0.0.0.0',
   sockjsPrefix = '/sockjs',
-  requestListeners = [],
+  // requestListeners = [],
   log = identity,
   server, // server should be http.Server instance or some instance like express inherite from http.Server
 } = {}) => {
@@ -20,9 +20,9 @@ export default ({
 
   const httpServer = server || defaultHttpServer()
 
-  if (requestListeners.length) {
-    requestListeners.forEach(listener => httpServer.addListener('request', listener))
-  }
+  // if (requestListeners.length) {
+  //   requestListeners.forEach(listener => httpServer.addListener('request', listener))
+  // }
 
   sockserver.installHandlers(httpServer, { prefix: sockjsPrefix })
   httpServer.listen(port, ip)
