@@ -5,12 +5,10 @@ import Channel from '../../client/channel'
 describe('client/reduxChannel', () => {
   let socket
   let reduxChannel
-  let connection
 
   beforeEach(() => {
     socket = new EventEmitter()
-    connection = new EventEmitter()
-    connection.write = () => {}
+    socket.send = () => {}
     reduxChannel = new ReduxChannel(socket)
     reduxChannel.emitter.emit('open')
   })
@@ -51,5 +49,36 @@ describe('client/reduxChannel', () => {
     expect(() => {
       reduxChannel.emitter.emit('data', data2)
     }).toThrow()
+  })
+
+  it('ondata receive the data with data.data and data.data.type', () => {
+    const data = {
+      type: 'channel',
+      channel: 'redux',
+      data: {
+        type: 'ADD',
+        payload: 'baby',
+      },
+    }
+    const spy = expect.createSpy()
+    reduxChannel.receive(spy)
+    reduxChannel.emitter.emit('data', data)
+    expect(spy).toHaveBeenCalledWith(data.data)
+  })
+
+  it('send wrong data without data or data.type', () => {
+    expect(() => {
+      reduxChannel.send()
+    }).toThrow()
+
+    expect(() => {
+      reduxChannel.send({})
+    }).toThrow()
+
+    const spy = expect.spyOn(socket, 'send')
+    reduxChannel.send({
+      type: 'XXX',
+    })
+    expect(spy).toHaveBeenCalled()
   })
 })

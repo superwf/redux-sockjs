@@ -4,9 +4,9 @@ import startClient from '../../client/startChannel'
 describe('start channel for server and client', () => {
   it('client channel send data to server', done => {
     const param = {
-      ip: '127.0.0.1',
-      port: 10001,
-      sockjsPrefix: '/sockjs-prefix',
+      // ip: '127.0.0.1',
+      // port: 10001,
+      // sockjsPrefix: '/sockjs-prefix',
       channelName: 'channel test name',
     }
     const { channel: serverChannel, httpServer } = startServer(param)

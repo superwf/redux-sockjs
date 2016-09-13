@@ -7,12 +7,10 @@ class Emitter extends EventEmitter {
     super()
     this.connection = connection
     this.setMaxListeners(100)
-    this.open = false
 
     this.onmessage = this.onmessage.bind(this)
 
     this.connection.onopen = () => {
-      // this.open = true
       this.emit('open')
     }
 

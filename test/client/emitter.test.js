@@ -16,7 +16,6 @@ describe('client/emitter', () => {
 
   it('maxListeners is 100, has open property, has connection property', () => {
     expect(emitter.getMaxListeners()).toBe(100)
-    expect(emitter.open).toBe(false)
     const onopen = expect.createSpy()
     emitter.on('open', onopen)
     socket.onopen()

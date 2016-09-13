@@ -14,6 +14,12 @@ describe('client/channel', () => {
     channel = new Channel(socket, channelName)
   })
 
+  it('if no channelName, will throw', () => {
+    expect(() => {
+      channel = new Channel(socket)
+    }).toThrow()
+  })
+
   it('constructor', () => {
     expect(channel.socket).toBe(socket)
     expect(channel.channelName).toBe(channelName)
@@ -54,13 +60,26 @@ describe('client/channel', () => {
       channel.emitter.emit('open')
     })
 
-    it('emitter ondata', done => {
+    it('emitter same channel, ondata can receive', done => {
       const data = { type: 'channel', channel: channelName, data: { xxx: 55555 } }
       channel.receive(message => {
         expect(data.data).toEqual(message)
         done()
       })
       channel.emitter.emit('data', data)
+    })
+
+    it('emitter different channel name will not be recevied', () => {
+      const data = { type: 'channel', channel: channelName, data: { xxx: 55555 } }
+      const spy = expect.createSpy()
+      channel.receive(spy)
+      channel.emitter.emit('data', data)
+      expect(spy.calls.length).toBe(1)
+      channel.emitter.emit('data', data)
+      expect(spy.calls.length).toBe(2)
+
+      channel.emitter.emit('data', { type: 'channel', channel: 'other channel', data: { xxx: 55555 } })
+      expect(spy.calls.length).toBe(2)
     })
 
     it('emitter onclose', () => {
