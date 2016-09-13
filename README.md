@@ -1,6 +1,8 @@
 redux with sockjs
 =================
 
+[![build status](https://img.shields.io/travis/acdlite/redux-promise/master.svg?style=flat-square)](https://travis-ci.org/superwf/redux-sockjs)
+
 ## Test
 
 ```js
