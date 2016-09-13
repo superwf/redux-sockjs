@@ -4,7 +4,9 @@ import Channel from '../../client/channel'
 import Emitter from '../../client/emitter'
 
 describe('client/channel', () => {
-  let channel, socket, channelName = 'A'
+  let channel
+  let socket
+  const channelName = 'A'
 
   beforeEach(() => {
     socket = new EventEmitter()
@@ -20,7 +22,6 @@ describe('client/channel', () => {
   })
 
   it('onopen and channel emit "open"', done => {
-    // const spy = expect.spyOn(channel, 'onopen').andCallThrough()
     channel.on('open', () => {
       expect(channel.emitter.listeners('data')).toEqual([channel.ondata])
       expect(channel.emitter.listeners('close')).toEqual([channel.onclose])
@@ -29,7 +30,6 @@ describe('client/channel', () => {
     expect(channel.emitter.listeners('data')).toEqual([])
     expect(channel.emitter.listeners('close')).toEqual([])
     channel.emitter.emit('open')
-    // expect(spy).toHaveBeenCalled()
   })
 
   it('receiveFunc', () => {
@@ -44,9 +44,9 @@ describe('client/channel', () => {
 
   it('send', () => {
     const spy = expect.spyOn(channel.emitter, 'send')
-    const data = {abc: 123}
+    const data = { abc: 123 }
     channel.send(data)
-    expect(spy).toHaveBeenCalledWith({ type: 'channel', channel: channelName, data})
+    expect(spy).toHaveBeenCalledWith({ type: 'channel', channel: channelName, data })
   })
 
   describe('after emitter onopen', () => {
@@ -55,7 +55,7 @@ describe('client/channel', () => {
     })
 
     it('emitter ondata', done => {
-      const data = {type: 'channel', channel: channelName, data: {xxx: 55555}}
+      const data = { type: 'channel', channel: channelName, data: { xxx: 55555 } }
       channel.receive(message => {
         expect(data.data).toEqual(message)
         done()
@@ -86,5 +86,4 @@ describe('client/channel', () => {
       expect(channel._receiveFunc).toBe(identity)
     })
   })
-
 })

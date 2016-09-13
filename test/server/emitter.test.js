@@ -1,5 +1,5 @@
-import Emitter from '../../server/emitter'
 import stream from 'stream'
+import Emitter from '../../server/emitter'
 
 describe('server/emitter', () => {
   let emitter
@@ -30,7 +30,7 @@ describe('server/emitter', () => {
   })
 
   it('on parse data', done => {
-    const data = {sdfas: 3434545}
+    const data = { sdfas: 3434545 }
     emitter.on('data', d => {
       expect(d).toEqual(data)
       done()
@@ -39,7 +39,7 @@ describe('server/emitter', () => {
   })
 
   it('send/on parse json', () => {
-    const data = {sdfas: 3434545}
+    const data = { sdfas: 3434545 }
     const spy = expect.spyOn(conn, 'write')
     emitter.send(data)
     expect(spy).toHaveBeenCalledWith(JSON.stringify(data))

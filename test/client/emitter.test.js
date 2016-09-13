@@ -1,10 +1,10 @@
-import Emitter from '../../client/emitter'
 import EventEmitter from 'events'
 import noop from 'lodash/noop'
+import Emitter from '../../client/emitter'
 
 describe('client/emitter', () => {
-
-  let emitter, socket
+  let emitter
+  let socket
   beforeEach(() => {
     socket = new EventEmitter()
     socket.send = noop
@@ -26,16 +26,16 @@ describe('client/emitter', () => {
 
   it('send', () => {
     const spy = expect.spyOn(emitter.connection, 'send')
-    const data = {xxx: 'sfdsdfdsf'}
+    const data = { xxx: 'sfdsdfdsf' }
     emitter.connection.onopen()
     emitter.send(data)
     expect(spy).toHaveBeenCalledWith(JSON.stringify(data))
   })
 
   it('onmessage', done => {
-    const data = {xxx: 'sdfsfd'}
+    const data = { xxx: 'sdfsfd' }
     const evt = {
-      data: JSON.stringify(data)
+      data: JSON.stringify(data),
     }
     emitter.on('data', msg => {
       expect(msg).toEqual(data)
@@ -52,5 +52,4 @@ describe('client/emitter', () => {
     expect(socket.listeners()).toEqual([])
     expect(emitter.listeners()).toEqual([])
   })
-
 })

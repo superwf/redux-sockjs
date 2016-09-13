@@ -12,7 +12,7 @@ describe('start channel for server and client', () => {
     const { channel: serverChannel, httpServer } = startServer(param)
     const clientChannel = startClient(param)
 
-    const clientData = {type: 'abc', payload: 'xxxxx'}
+    const clientData = { type: 'abc', payload: 'xxxxx' }
     serverChannel.receive(data => {
       expect(data).toEqual(clientData)
       serverChannel.emitter.connection.close()
@@ -34,7 +34,7 @@ describe('start channel for server and client', () => {
     const { channel: serverChannel, httpServer } = startServer(param)
     const clientChannel = startClient({ ...param, channelName: 'other channel' })
 
-    const clientData = {type: 'abc', payload: 'xxxxx'}
+    const clientData = { type: 'abc', payload: 'xxxxx' }
     const spy = expect.createSpy()
     serverChannel.receive(spy)
     clientChannel.on('open', () => {
@@ -56,7 +56,7 @@ describe('start channel for server and client', () => {
     const { channel: serverChannel, httpServer } = startServer(param)
     const clientChannel = startClient(param)
 
-    const serverData = {type: 'abc', payload: 'xxxxx'}
+    const serverData = { type: 'abc', payload: 'xxxxx' }
     clientChannel.receive(data => {
       expect(data).toEqual(serverData)
       clientChannel.emitter.connection.close()

@@ -8,6 +8,7 @@ npm test
 ```
 
 ## Usage
+for es6 project, use stage-0 syntax
 ### in server
 
 ```js

@@ -12,7 +12,7 @@ describe('startReduxChannel for server and client', () => {
     const { channel: serverChannel, httpServer } = startServer(param)
     const clientChannel = startClient(param)
 
-    const clientData = {type: 'abc', payload: 'xxxxx'}
+    const clientData = { type: 'abc', payload: 'xxxxx' }
     clientChannel.on('open', () => {
       clientChannel.send(clientData)
     })
@@ -33,20 +33,14 @@ describe('startReduxChannel for server and client', () => {
 
 
     it('client send action', done => {
-      const userReducer = (state, action) => {
-        if (!state) {
-          state = []
-        }
+      const userReducer = (state = [], action) => {
         if (action.type === 'ADD_USER') {
           return [...state, action.payload]
         }
         return state
       }
 
-      const clientReducer = (state, action) => {
-        if (!state) {
-          state = []
-        }
+      const clientReducer = (state = [], action) => {
         if (action.type === 'ADD_CLIENT') {
           return [...state, action.payload]
         }
@@ -61,7 +55,7 @@ describe('startReduxChannel for server and client', () => {
       const { channel: serverChannel, httpServer } = startServer(param)
       const clientChannel = startClient(param)
 
-      const clientData = {type: 'ADD_USER', payload: {user: 'tom'}}
+      const clientData = { type: 'ADD_USER', payload: { user: 'tom' } }
       clientChannel.on('open', () => {
         clientChannel.send(clientData)
       })

@@ -3,7 +3,9 @@ import ReduxChannel from '../../client/reduxChannel'
 import Channel from '../../client/channel'
 
 describe('client/reduxChannel', () => {
-  let socket, reduxChannel, connection
+  let socket
+  let reduxChannel
+  let connection
 
   beforeEach(() => {
     socket = new EventEmitter()
@@ -22,7 +24,7 @@ describe('client/reduxChannel', () => {
     const data = {
       type: 'channel',
       channel: 'redux',
-      data: {type: 'abc', payload: [1, 2, 3]},
+      data: { type: 'abc', payload: [1, 2, 3] },
     }
     reduxChannel.receive(msg => {
       expect(msg).toEqual(data.data)
@@ -38,16 +40,16 @@ describe('client/reduxChannel', () => {
       channel: 'redux',
     }
     expect(() => {
-      emitter.emit('data', data1)
+      reduxChannel.emitter.emit('data', data1)
     }).toThrow()
 
     const data2 = {
       type: 'channel',
       channel: 'redux',
-      data: {name: 'xxx'},
+      data: { name: 'xxx' },
     }
     expect(() => {
-      emitter.emit('data', data2)
+      reduxChannel.emitter.emit('data', data2)
     }).toThrow()
   })
 })

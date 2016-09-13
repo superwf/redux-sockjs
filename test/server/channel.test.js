@@ -4,7 +4,10 @@ import Channel from '../../server/channel'
 import Emitter from '../../server/emitter'
 
 describe('server/channel', () => {
-  let socket, channel, connection, channelName = 'A'
+  let socket
+  let channel
+  let connection
+  const channelName = 'A'
 
   beforeEach(() => {
     socket = new EventEmitter()
@@ -34,14 +37,14 @@ describe('server/channel', () => {
       socket.emit('connection', connection)
     })
     it('send', () => {
-      const data = {abc: 123}
+      const data = { abc: 123 }
       const spy = expect.spyOn(channel.emitter, 'send')
       channel.send(data)
-      expect(spy).toHaveBeenCalledWith({ type: 'channel', channel: channelName, data})
+      expect(spy).toHaveBeenCalledWith({ type: 'channel', channel: channelName, data })
     })
 
     it('ondata', done => {
-      const data = {type: 'channel', channel: channelName, data: {xxx: 55555}}
+      const data = { type: 'channel', channel: channelName, data: { xxx: 55555 } }
       channel.receive(message => {
         expect(data.data).toEqual(message)
         done()

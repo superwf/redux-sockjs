@@ -8,6 +8,7 @@
     "type": "git"
   },
   "scripts": {
+    "build": "NODE_ENV=production rollup -c rollup.config.js",
     "test": "NODE_ENV=test mocha --watch --opts test/mocha.opts"
   },
   "keywords": [
