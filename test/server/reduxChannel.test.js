@@ -1,8 +1,8 @@
 import EventEmitter from 'events'
-import ReduxChannel from '../../server/reduxChannel'
+import ReduxChannel, { Channels } from '../../server/reduxChannel'
 import Channel from '../../server/channel'
 
-describe('server/reduxChannel', () => {
+describe.only('server/reduxChannel', () => {
   let emitter
   let reduxChannel
   let connection
@@ -13,6 +13,10 @@ describe('server/reduxChannel', () => {
     connection.write = () => {}
     reduxChannel = new ReduxChannel(emitter)
     reduxChannel.emitter.emit('open')
+  })
+
+  afterEach(() => {
+    reduxChannel.destroy()
   })
 
   it('inherite from Channel', () => {
@@ -51,5 +55,6 @@ describe('server/reduxChannel', () => {
     expect(() => {
       reduxChannel.emitter.emit('data', data2)
     }).toThrow()
+    console.log(Channels.length)
   })
 })

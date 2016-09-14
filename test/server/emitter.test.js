@@ -21,14 +21,6 @@ describe('server/emitter', () => {
     expect(number).toBe(100)
   })
 
-  it('on parse error json data', () => {
-    const data = 'xxxxxx'
-    conn.emit('data', JSON.stringify(data))
-    expect(() => {
-      conn.emit('data', data)
-    }).toThrow()
-  })
-
   it('on parse data', done => {
     const data = { sdfas: 3434545 }
     emitter.on('data', d => {
@@ -36,6 +28,13 @@ describe('server/emitter', () => {
       done()
     })
     conn.emit('data', JSON.stringify(data))
+  })
+
+  it('on parse none json data, warn it', () => {
+    const spy = expect.spyOn(console, 'warn')
+    conn.emit('data', 'xxxxxxx')
+    expect(spy).toHaveBeenCalled()
+    spy.restore()
   })
 
   it('send/on parse json', () => {

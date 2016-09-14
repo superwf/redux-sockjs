@@ -7,6 +7,7 @@ module.exports = {
     modules: true
   },
   plugins: [
+    'babel',
     'json',
   ],
   // ecmaFeatures: {
@@ -21,9 +22,11 @@ module.exports = {
   rules: {
     semi: [1, 'never'],
     'import/no-extraneous-dependencies': 0,
-    'no-console': ['error'],
+    'no-console': 0,
     'max-len': ['error', {ignoreComments: true, code: 200}],
     'no-underscore-dangle': 0,
-    'arrow-parens': [2, 'as-needed'],
+    'arrow-parens': [0, 'as-needed'],
+    'babel/arrow-parens': 0,
+    'babel/arrow-parens': 0,
   },
 }

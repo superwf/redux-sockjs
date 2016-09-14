@@ -8,6 +8,7 @@ module.exports = {
     modules: true
   },
   plugins: [
+    'babel',
     'json',
   ],
   env: {
@@ -22,6 +23,8 @@ module.exports = {
     'no-console': ['error'],
     'max-len': ['error', {ignoreComments: true, code: 200}],
     'no-underscore-dangle': ['error', {allowAfterThis: true, allowAfterSuper: true}],
-    'arrow-parens': [2, 'as-needed'],
+    'arrow-parens': [0, 'as-needed'],
+    'babel/arrow-parens': 0,
+    'babel/generator-star-spacing': 0,
   },
 }

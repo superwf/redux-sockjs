@@ -22,7 +22,6 @@
   "author": "superwf@gmail.com",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.14.0",
     "lodash": "^4.15.0",
     "log4js": "^0.6.38",
     "redux": "^3.5.2",
@@ -41,6 +40,7 @@
     "babel-register": "^6.14.0",
     "eslint": "^3.4.0",
     "eslint-config-airbnb": "^10.0.1",
+    "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-import": "^1.14.0",
     "eslint-plugin-json": "^1.2.0",
     "eslint-plugin-jsx-a11y": "^2.2.1",
@@ -49,6 +49,7 @@
     "isparta": "^4.0.0",
     "istanbul": "^1.1.0-alpha.1",
     "mocha": "^3.0.2",
+    "redux-action": "^1.0.0",
     "rollup": "^0.34.13",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-json": "^2.0.1"

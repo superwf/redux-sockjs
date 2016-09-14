@@ -38,14 +38,17 @@ describe('client/channel', () => {
     channel.emitter.emit('open')
   })
 
-  it('receiveFunc', () => {
-    const func = () => {}
+  it('receiveFunc will be the func bind to channel', () => {
+    const func = expect.createSpy()
     channel.receive(func)
-    expect(channel._receiveFunc).toBe(func)
+    expect(channel._receiveFunc).toEqual(func.bind(channel))
+    expect(func).toNotHaveBeenCalled()
+    channel._receiveFunc()
+    expect(func).toHaveBeenCalled()
 
     const func1 = () => {}
     channel.receive(func1)
-    expect(channel._receiveFunc).toBe(func1)
+    expect(channel._receiveFunc).toEqual(func1.bind(channel))
   })
 
   it('send', () => {

@@ -14,8 +14,8 @@ for es6 project, use stage-0 syntax
 ### in server
 
 ```js
-import { startStever } from 'redux-sockjs'
-const channel = startServer({
+import { startReduxServer } from 'redux-sockjs'
+const channel = startReduxServer({
   port: 1000, // port should be same with browser
 })
 
@@ -31,8 +31,8 @@ channel.receive(action => {
 
 ### in browser use webpack or browserify
 ```js
-import { startClient } from 'redux-sockjs'
-const channel = startClient({
+import { startReduxClient } from 'redux-sockjs'
+const channel = startReduxClient({
   port: 1000, // port should be same with server
 })
 channel.receive(action => {
@@ -50,6 +50,7 @@ channel.receive(action => {
 ```
 
 ### startServer param
+if no param, just startServer(), it will use default param as below
 ```js
 startServer({
   port = 3060,
@@ -61,6 +62,9 @@ startServer({
 ```
 
 ### startClient param
+
+if no param, just startClient(), it will use default param as below
+the protocal should correspond to the server protocal
 ```js
 startClient({
   port = 3060,

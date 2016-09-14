@@ -1,4 +1,5 @@
 import EventEmitter from 'events'
+import warn from '../lib/warn'
 
 /* all sockjs should dispatch to instance of this class
  * */
@@ -25,12 +26,16 @@ class Emitter extends EventEmitter {
   }
 
   ondata(message) {
-    const data = JSON.parse(message)
-    this.emit('data', data)
+    try {
+      const data = JSON.parse(message)
+      this.emit('data', data)
+    } catch (e) {
+      warn(e)
+    }
   }
 
   // emit data to connection
-  // so no eventName, only data
+  // no eventName, only data
   send(data) {
     this.connection.write(JSON.stringify(data))
   }

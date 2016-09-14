@@ -1,4 +1,5 @@
 import EventEmitter from 'events'
+import warn from '../lib/warn'
 
 /* all sockjs should dispatch to instance of this class
  * */
@@ -23,16 +24,17 @@ class Emitter extends EventEmitter {
   }
 
   onmessage(evt) {
-    const data = JSON.parse(evt.data)
-    this.emit('data', data)
+    try {
+      const data = JSON.parse(evt.data)
+      this.emit('data', data)
+    } catch (e) {
+      warn(e)
+    }
   }
 
   // send data to socket
-  // so no eventName, only data
+  // no eventName, only data
   send(data) {
-    // if (!this.open) {
-    //   throw new Error('connection not open yet, try send in later code')
-    // }
     this.connection.send(JSON.stringify(data))
   }
 

@@ -1,6 +1,5 @@
 import { createStore, combineReducers } from 'redux'
-import { startServer, startClient } from '../../index'
-// import startClient from '../../client/startReduxChannel'
+import { startReduxServer, startReduxClient } from '../../index'
 
 describe('startReduxChannel for server and client', () => {
   it('emit redux', done => {
@@ -9,8 +8,8 @@ describe('startReduxChannel for server and client', () => {
       port: 10000,
       sockjsPrefix: '/sockjs-redux',
     }
-    const { channel: serverChannel, httpServer } = startServer(param)
-    const clientChannel = startClient(param)
+    const { channel: serverChannel, httpServer } = startReduxServer(param)
+    const clientChannel = startReduxClient(param)
 
     const clientData = { type: 'abc', payload: 'xxxxx' }
     clientChannel.on('open', () => {
@@ -52,8 +51,8 @@ describe('startReduxChannel for server and client', () => {
         client: clientReducer,
       }))
 
-      const { channel: serverChannel, httpServer } = startServer(param)
-      const clientChannel = startClient(param)
+      const { channel: serverChannel, httpServer } = startReduxServer(param)
+      const clientChannel = startReduxClient(param)
 
       const clientData = { type: 'ADD_USER', payload: { user: 'tom' } }
       clientChannel.on('open', () => {
@@ -63,7 +62,6 @@ describe('startReduxChannel for server and client', () => {
       clientChannel.receive(action => {
         clientStore.dispatch(action)
         const state = clientStore.getState()
-        // console.log(state)
         expect(state.user[0].id).toBe(123)
         serverChannel.emitter.connection.close()
         httpServer.close()

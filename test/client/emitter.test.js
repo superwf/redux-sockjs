@@ -43,6 +43,16 @@ describe('client/emitter', () => {
     socket.onmessage(evt)
   })
 
+  it('onmessage receive none json data will throw', () => {
+    const evt = {
+      data: 'xxxxxx',
+    }
+    const spy = expect.spyOn(console, 'warn')
+    socket.onmessage(evt)
+    expect(spy).toHaveBeenCalled()
+    spy.restore()
+  })
+
   it('socket.onclose and emitter.destroy', done => {
     emitter.on('close', () => {
       done()

@@ -1,9 +1,9 @@
-import startServer from './server/startReduxChannel'
-import startClient from './client/startReduxChannel'
+import startReduxServer from './server/startReduxChannel'
+import startReduxClient from './client/startReduxChannel'
 
-export { startServer, startClient }
+export { startReduxServer, startReduxClient }
 
 export default {
-  startServer,
-  startClient,
+  startReduxServer,
+  startReduxClient,
 }
