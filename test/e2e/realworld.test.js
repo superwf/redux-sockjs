@@ -4,6 +4,7 @@ import reduxPromise from 'redux-promise'
 import uuid from 'uuid'
 import { startReduxServer, startReduxClient } from '../../index'
 import isAction from '../../lib/isAction'
+// import Emitter from '../../server/emitter'
 // import warn from '../../lib/warn'
 
 describe('real world', () => {
@@ -13,7 +14,7 @@ describe('real world', () => {
     const reduxClient = startReduxClient()
 
     const timeoutInterval = 1000
-    // browser side redux action, reducer, store
+    /* browser side redux action, reducer, store */
     const addUserOnClient = user => {
       if (isAction(user)) {
         return user
@@ -56,12 +57,12 @@ describe('real world', () => {
     }), applyMiddleware(reduxPromise))
 
     emitter.on('ADD_USER', user => {
-      // warn(user)
+      // warn('emititer on ADD_USER', user)
       clientStore.dispatch(addUserOnClient(user))
     })
 
     reduxClient.receive(action => {
-      // warn(action)
+      // warn('reduxClient receive', action)
       const eventName = `${action.type}-${action.token}`
       if (emitter.listeners(eventName).length) {
         emitter.emit(eventName, action)
@@ -71,7 +72,7 @@ describe('real world', () => {
       }
     })
 
-    // server side
+    /* server side */
     const addUserOnServer = action => {
       /* pretend insert user to db and get new user with id */
       const payload = (user => ({ ...user, id: 1 }))(action.payload)
@@ -90,23 +91,64 @@ describe('real world', () => {
     }
 
     reduxServer.receive(action => {
-      reduxServer.send(userReducerOnServer(action))
-    })
-
-    reduxServer.on('open', () => {
-      reduxServer.send({ type: 'INITIAL_STATE', payload: [] })
+      reduxServer.broadcast(userReducerOnServer(action))
     })
 
     await new Promise(resolve => {
       reduxClient.on('open', async () => {
-        await clientStore.dispatch(addUserOnClient({ name: 'fff' }))
+        await clientStore.dispatch(addUserOnClient({ name: 'from browser 0' }))
         resolve()
       })
     })
 
 
+    expect(clientStore.getState().user).toEqual([{ name: 'from browser 0', id: 1 }])
+
+
+    /* another client connect this channel */
+    const reduxClient1 = startReduxClient()
+    // warn(reduxServer.socket.listeners('connection').length)
+    const token1 = uuid()
+    reduxClient1.on('open', () => {
+      reduxClient1.send({
+        type: 'ADD_USER',
+        payload: { name: 'another user' },
+        token: token1,
+      })
+    })
+
+    await new Promise(resolve => {
+      emitter.once(`ADD_USER-${token1}`, user => {
+        clientStore.dispatch(addUserOnClient(user))
+        resolve()
+      })
+    })
+
+    const reduxClient2 = startReduxClient()
+    const token2 = uuid()
+    reduxClient2.on('open', () => {
+      reduxClient2.send({
+        type: 'ADD_USER',
+        payload: { name: 'another user from reduxClient2' },
+        token: token2,
+      })
+    })
+
+    await new Promise(resolve => {
+      emitter.once(`ADD_USER-${token2}`, user => {
+        clientStore.dispatch(addUserOnClient(user))
+        resolve()
+      })
+    })
+
+    // console.log(Emitter.connections.length)
+    // console.log(Emitter.connections[0] === reduxServer.emitter.connection)
+    // await global.sleep(100)
+    // console.log(Emitter.connections.length)
+
+    expect(clientStore.getState().user)
+
     reduxServer.emitter.connection.close()
     httpServer.close()
-    expect(clientStore.getState().user).toEqual([{ name: 'fff', id: 1 }])
   })
 })

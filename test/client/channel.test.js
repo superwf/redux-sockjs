@@ -28,13 +28,11 @@ describe('client/channel', () => {
   })
 
   it('onopen and channel emit "open"', done => {
+    expect(channel.emitter.listeners('data')).toEqual([channel.ondata])
+    expect(channel.emitter.listeners('close')).toEqual([channel.onclose])
     channel.on('open', () => {
-      expect(channel.emitter.listeners('data')).toEqual([channel.ondata])
-      expect(channel.emitter.listeners('close')).toEqual([channel.onclose])
       done()
     })
-    expect(channel.emitter.listeners('data')).toEqual([])
-    expect(channel.emitter.listeners('close')).toEqual([])
     channel.emitter.emit('open')
   })
 
