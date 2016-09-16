@@ -1,5 +1,4 @@
 import EventEmitter from 'events'
-import identity from 'lodash/identity'
 import Channel from '../../client/channel'
 import Emitter from '../../client/emitter'
 
@@ -14,6 +13,10 @@ describe('client/channel', () => {
     channel = new Channel(socket, channelName)
   })
 
+  afterEach(() => {
+    channel.destroy()
+  })
+
   it('if no channelName, will throw', () => {
     expect(() => {
       channel = new Channel(socket)
@@ -24,7 +27,7 @@ describe('client/channel', () => {
     expect(channel.socket).toBe(socket)
     expect(channel.channelName).toBe(channelName)
     expect(channel.emitter).toBeA(Emitter)
-    expect(channel._receiveFunc).toBe(identity)
+    expect(channel._ondataFuncs).toEqual(new Map())
   })
 
   it('onopen and channel emit "open"', done => {
@@ -39,14 +42,27 @@ describe('client/channel', () => {
   it('receiveFunc will be the func bind to channel', () => {
     const func = expect.createSpy()
     channel.receive(func)
-    expect(channel._receiveFunc).toEqual(func.bind(channel))
+    expect(channel._ondataFuncs.get(func)).toEqual(func.bind(channel))
     expect(func).toNotHaveBeenCalled()
-    channel._receiveFunc()
+    channel._ondataFuncs.get(func)()
     expect(func).toHaveBeenCalled()
 
     const func1 = () => {}
     channel.receive(func1)
-    expect(channel._receiveFunc).toEqual(func1.bind(channel))
+    expect(channel._ondataFuncs.get(func1)).toEqual(func1.bind(channel))
+  })
+
+  it('remove', () => {
+    const func = expect.createSpy()
+    channel.receive(func)
+    expect(func).toNotHaveBeenCalled()
+    channel.ondata()
+    expect(func).toNotHaveBeenCalled()
+    channel.ondata({ type: 'channel', channel: channelName })
+    expect(func.calls.length).toBe(1)
+    channel.remove(func)
+    channel.ondata({ type: 'channel', channel: channelName })
+    expect(func.calls.length).toBe(1)
   })
 
   it('send', () => {
@@ -103,7 +119,7 @@ describe('client/channel', () => {
       expect(channel.emitter.listeners('data').length > 0).toBe(false)
       expect(channel.emitter.listeners('close').length > 0).toBe(false)
       expect(channel.listeners('abc').length > 0).toBe(false)
-      expect(channel._receiveFunc).toBe(identity)
+      expect(channel._ondataFuncs).toBe(null)
     })
   })
 })

@@ -1,5 +1,4 @@
 import EventEmitter from 'events'
-import identity from 'lodash/identity'
 import Channel from '../../server/channel'
 import Emitter from '../../server/emitter'
 
@@ -14,6 +13,10 @@ describe('server/channel', () => {
     connection = new EventEmitter()
     connection.write = () => {}
     channel = new Channel(socket, channelName)
+  })
+
+  afterEach(() => {
+    channel.destroy()
   })
 
   it('constructor', () => {
@@ -63,7 +66,7 @@ describe('server/channel', () => {
       expect(channel.emitter.listeners('open')).toEqual([])
       expect(channel.emitter.listeners('data')).toEqual([])
       expect(channel.emitter.listeners('close')).toEqual([])
-      expect(channel._receiveFunc).toBe(identity)
+      expect(channel._ondataFuncs).toBe(null)
     })
   })
 })
