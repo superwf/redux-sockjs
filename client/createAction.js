@@ -1,29 +1,33 @@
 import uuid from 'uuid'
 import EventEmitter from 'events'
-import isAction from '../lib/isAction'
 
+const actionEmitter = new EventEmitter()
+actionEmitter.setMaxListeners(100)
+const ActionTypes = {
+  SOCKJS: '@@redux-sockjs',
+  SKIP_ACTION: '@@redux-sockjs-skip-action',
+}
+
+/**
+ * @param {ReduxChannel} ReduxChannel instance
+ * @param {Number} timeoutInterval, unit milisecond
+ * @return {Function} action creator that bound to reduxChannel
+ */
 const createAction = (reduxChannel, timeoutInterval = 1000) => {
-  const emitter = new EventEmitter()
-
   reduxChannel.receive(action => {
-    const eventName = `${action.type}${action.token}`
-    if (emitter.listeners(eventName).length) {
-      emitter.emit(eventName, action)
+    const { token } = action
+    if (token && actionEmitter.listeners(token).length) {
+      actionEmitter.emit(token, action)
+    /* for action from other sockjs connection */
     } else {
-      emitter.emit(action.type, action)
+      actionEmitter.emit(ActionTypes.SOCKJS, action)
     }
   })
-
-  return type => {
-    const actionFunc = payload => {
-      /* recevie action from server */
-      if (isAction(payload)) {
-        return payload
-      }
-      /* send payload to server */
+  /* send payload to server */
+  return (type, sync = true) => payload => {
+    if (sync) {
       return new Promise((resolve, reject) => {
         const token = uuid()
-        const eventName = `${type}${token}`
         reduxChannel.send({
           type,
           payload,
@@ -35,17 +39,20 @@ const createAction = (reduxChannel, timeoutInterval = 1000) => {
           clearTimeout(timer)
         }
         timer = setTimeout(() => {
-          reject(`type: ${type}, token: ${token} failed because timeout`)
-          emitter.removeListener(eventName, resolver)
+          actionEmitter.removeListener(token, resolver)
+          reject(`type: ${type}, token: ${token}, payload: ${payload} failed because timeout more than ${timeoutInterval}`)
         }, timeoutInterval)
-        emitter.once(eventName, resolver)
+        actionEmitter.once(token, resolver)
       })
     }
-    return actionFunc
+    reduxChannel.send({
+      type,
+      payload,
+    })
+    return { type: ActionTypes.SKIP_ACTION }
   }
 }
-// emitter.on(type, action => {
-//   store.dispatch(actionFunc(action))
-// })
+
+export { actionEmitter, ActionTypes }
 
 export default createAction
