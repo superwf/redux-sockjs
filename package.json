@@ -2,12 +2,14 @@
   "name": "redux-sockjs",
   "version": "0.0.1",
   "description": "use sockjs to pub and sub redux action",
-  "main": "index.js",
+  "main": "build/index.js",
+  "jsnext:main": "index.js",
   "repository": {
     "url": "https://github.com/superwf/redux-sockjs.git",
     "type": "git"
   },
   "scripts": {
+    "build:client": "NODE_ENV=production rollup -c rollup.config.browser.js",
     "build": "NODE_ENV=production rollup -c rollup.config.js",
     "test": "NODE_ENV=test mocha --opts test/mocha.opts",
     "test:dev": "NODE_ENV=test mocha --watch --opts test/mocha.opts",
@@ -44,7 +46,7 @@
     "eslint-plugin-import": "^1.14.0",
     "eslint-plugin-json": "^1.2.0",
     "eslint-plugin-jsx-a11y": "^2.2.1",
-    "eslint-plugin-react": "^6.2.0",
+    "eslint-plugin-react": "^6.2.2",
     "expect": "^1.20.2",
     "isparta": "^4.0.0",
     "istanbul": "^1.1.0-alpha.1",

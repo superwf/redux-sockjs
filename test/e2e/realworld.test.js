@@ -4,12 +4,16 @@ import reduxPromise from 'redux-promise'
 import uuid from 'uuid'
 import { startReduxServer, startReduxClient } from '../../index'
 import isAction from '../../lib/isAction'
+import defaultHttpServer from '../../server/defaultHttpServer'
 // import Emitter from '../../server/emitter'
 // import warn from '../../lib/warn'
 
 describe('real world', () => {
   it('browser receive initial state from server', async () => {
-    const { channel: reduxServer, httpServer } = startReduxServer()
+    const httpServer = defaultHttpServer()
+    const reduxServer = startReduxServer({
+      server: httpServer,
+    })
     const emitter = new EventEmitter()
     const reduxClient = startReduxClient()
 

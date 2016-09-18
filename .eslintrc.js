@@ -10,6 +10,7 @@ module.exports = {
   plugins: [
     'babel',
     'json',
+    'react',
   ],
   env: {
     es6: true,

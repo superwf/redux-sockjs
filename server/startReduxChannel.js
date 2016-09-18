@@ -26,5 +26,5 @@ export default ({
 
   sockserver.installHandlers(httpServer, { prefix: sockjsPrefix })
   httpServer.listen(port, ip)
-  return { channel, httpServer }
+  return channel
 }

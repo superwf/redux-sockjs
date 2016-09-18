@@ -10,8 +10,8 @@ const banner =
 */`
 
 module.exports = {
-  entry: './index.js',
-  dest: './build/index.js',
+  entry: './client/index.js',
+  dest: './build/browser.js',
   plugins: [babel(), json()],
   format: 'cjs',
   moduleName: 'redux-sockjs',

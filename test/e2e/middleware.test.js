@@ -4,12 +4,16 @@ import { startReduxServer, startReduxClient } from '../../index'
 // import isAction from '../../lib/isAction'
 import createAction from '../../client/createAction'
 import reduxSockjs from '../../client/middleware'
+import defaultHttpServer from '../../server/defaultHttpServer'
 // import warn from '../../lib/warn'
 
 describe.only('middle ware', function testMiddleware() {
   this.slow(1000)
   it('test middleware sync action', async () => {
-    const { channel: reduxServer, httpServer } = startReduxServer()
+    const httpServer = defaultHttpServer()
+    const reduxServer = startReduxServer({
+      server: httpServer,
+    })
     const reduxClient = startReduxClient()
 
     const userReducerOnClient = (state = [], action) => {
@@ -86,8 +90,9 @@ describe.only('middle ware', function testMiddleware() {
   })
 
   it('test middleware async action', async () => {
-    const param = { port: 10000 }
-    const { channel: reduxServer, httpServer } = startReduxServer(param)
+    const httpServer = defaultHttpServer()
+    const param = { port: 10000, server: httpServer }
+    const reduxServer = startReduxServer(param)
     const reduxClient = startReduxClient(param)
 
     const userReducerOnClient = (state = [], action) => {
