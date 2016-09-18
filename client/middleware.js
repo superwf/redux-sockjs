@@ -1,7 +1,7 @@
-import { actionEmitter, ActionTypes } from './createAction'
+import { ActionTypes } from './createAction'
 
 /* for action from other sockjs connection */
-const middleware = ({ dispatch }) => {
+const middleware = actionEmitter => ({ dispatch }) => {
   actionEmitter.on(ActionTypes.SOCKJS, action => {
     dispatch(action)
   })

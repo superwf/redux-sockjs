@@ -20,7 +20,7 @@ const channel = startReduxServer({
 })
 
 channel.receive(action => {
-  console.log(action) // action is sent from browser
+  console.log(action) // action from browser
   // here should do some redux operation
   // store.dispatch(action)
   store.dispatch(action)
