@@ -214,7 +214,7 @@ var startReduxServer = ({
 
   sockserver.installHandlers(httpServer, { prefix: sockjsPrefix })
   httpServer.listen(port, ip)
-  return { channel, httpServer }
+  return channel
 }
 
 /* all sockjs should dispatch to instance of this class
@@ -280,13 +280,12 @@ const ActionTypes = {
 
 const server = http.createServer()
 
-const { channel: reduxChannel } = startReduxServer({
+const reduxChannel = startReduxServer({
   server,
   port: 3010,
   sockjsPrefix: '/sockjs-redux',
 })
 
 reduxChannel.receive(action => {
-  console.log(action)
   reduxChannel.broadcast(action)
 })

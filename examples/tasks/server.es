@@ -7,7 +7,7 @@ import { startReduxServer } from '../../index'
 
 const server = http.createServer()
 
-const { channel: reduxChannel } = startReduxServer({
+const reduxChannel = startReduxServer({
   server,
   port: 3010,
   sockjsPrefix: '/sockjs-redux',
