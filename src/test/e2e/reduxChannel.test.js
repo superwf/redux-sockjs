@@ -1,14 +1,18 @@
 import { createStore, combineReducers } from 'redux'
-import { startReduxServer, startReduxClient } from '../../index'
+import { startReduxServer } from '../../../server'
+import { startReduxClient } from '../../../client'
+import defaultHttpServer from '../../server/defaultHttpServer'
 
-describe('startReduxChannel for server and client', () => {
+describe('startReduxChannel for server and client', function testStartReduxChannel() {
+  this.slow(1000)
   it('emit redux', done => {
+    const httpServer = defaultHttpServer()
     const param = {
       ip: '127.0.0.1',
-      port: 10000,
+      port: 10002,
       sockjsPrefix: '/sockjs-redux',
     }
-    const { channel: serverChannel, httpServer } = startReduxServer(param)
+    const serverChannel = startReduxServer({ ...param, server: httpServer })
     const clientChannel = startReduxClient(param)
 
     const clientData = { type: 'abc', payload: 'xxxxx' }
@@ -26,7 +30,7 @@ describe('startReduxChannel for server and client', () => {
   describe('use store in client and server', () => {
     const param = {
       ip: '127.0.0.1',
-      port: 10000,
+      port: 10003,
       sockjsPrefix: '/sockjs-redux',
     }
 
@@ -51,7 +55,8 @@ describe('startReduxChannel for server and client', () => {
         client: clientReducer,
       }))
 
-      const { channel: serverChannel, httpServer } = startReduxServer(param)
+      const httpServer = defaultHttpServer()
+      const serverChannel = startReduxServer({ ...param, server: httpServer })
       const clientChannel = startReduxClient(param)
 
       const clientData = { type: 'ADD_USER', payload: { user: 'tom' } }

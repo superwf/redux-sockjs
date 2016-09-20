@@ -2,10 +2,10 @@ import { createStore, combineReducers, applyMiddleware } from 'redux'
 import EventEmitter from 'events'
 import reduxPromise from 'redux-promise'
 import uuid from 'uuid'
-import { startReduxServer, startReduxClient } from '../../index'
+import { startReduxClient } from '../../../client'
+import { startReduxServer } from '../../../server'
 import isAction from '../../lib/isAction'
 import defaultHttpServer from '../../server/defaultHttpServer'
-// import Emitter from '../../server/emitter'
 // import warn from '../../lib/warn'
 
 describe('real world', () => {
@@ -144,11 +144,6 @@ describe('real world', () => {
         resolve()
       })
     })
-
-    // console.log(Emitter.connections.length)
-    // console.log(Emitter.connections[0] === reduxServer.emitter.connection)
-    // await global.sleep(100)
-    // console.log(Emitter.connections.length)
 
     expect(clientStore.getState().user)
 

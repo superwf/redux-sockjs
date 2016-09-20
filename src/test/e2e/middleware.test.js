@@ -1,20 +1,24 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import reduxPromise from 'redux-promise'
-import { startReduxServer, startReduxClient } from '../../index'
-// import isAction from '../../lib/isAction'
+import { startReduxServer } from '../../../server'
+import { startReduxClient } from '../../../client'
 import createAction from '../../client/createAction'
 import reduxSockjs from '../../client/middleware'
 import defaultHttpServer from '../../server/defaultHttpServer'
 // import warn from '../../lib/warn'
 
-describe.only('middle ware', function testMiddleware() {
+describe('middle ware', function testMiddleware() {
   this.slow(1000)
   it('test middleware sync action', async () => {
     const httpServer = defaultHttpServer()
+    const port = 10001
     const reduxServer = startReduxServer({
+      port,
       server: httpServer,
     })
-    const reduxClient = startReduxClient()
+    const reduxClient = startReduxClient({
+      port,
+    })
 
     const userReducerOnClient = (state = [], action) => {
       if (action.type === 'INITIAL_STATE') {
@@ -26,12 +30,12 @@ describe.only('middle ware', function testMiddleware() {
       return state
     }
 
-    const [create, actionEmitter] = createAction(reduxClient)
+    const create = createAction(reduxClient)
     const createUser = create('ADD_USER')
 
     const clientStore = createStore(combineReducers({
       user: userReducerOnClient,
-    }), applyMiddleware(reduxPromise, reduxSockjs(actionEmitter)))
+    }), applyMiddleware(reduxPromise, reduxSockjs))
 
     const addUserOnServer = async (action) => {
       /* pretend insert user to db and get new user with id */
@@ -60,7 +64,7 @@ describe.only('middle ware', function testMiddleware() {
     await clientStore.dispatch(createUser({ name: 'xxx' }))
 
     /* create another client connect from sockjs */
-    const anotherClient = startReduxClient()
+    const anotherClient = startReduxClient({ port })
     await new Promise(resolve => {
       anotherClient.on('open', resolve)
     })
@@ -69,7 +73,7 @@ describe.only('middle ware', function testMiddleware() {
       payload: { name: 'another user' },
     })
 
-    const anotherClient1 = startReduxClient()
+    const anotherClient1 = startReduxClient({ port })
     await new Promise(resolve => {
       anotherClient1.on('open', resolve)
     })
@@ -78,7 +82,14 @@ describe.only('middle ware', function testMiddleware() {
       payload: { name: 'another user 1' },
     })
 
-    await global.sleep(10)
+    /* wait until last action is received */
+    await new Promise(resolve => {
+      reduxClient.receive(action => {
+        if (action.payload.name === 'another user 1') {
+          resolve()
+        }
+      })
+    })
 
     const stateUser = clientStore.getState().user
     expect(stateUser.length).toBe(3)
@@ -106,12 +117,12 @@ describe.only('middle ware', function testMiddleware() {
       return state
     }
 
-    const [create, actionEmitter] = createAction(reduxClient)
+    const create = createAction(reduxClient)
     const createUser = create('ADD_USER', false)
 
     const clientStore = createStore(combineReducers({
       user: userReducerOnClient,
-    }), applyMiddleware(reduxPromise, reduxSockjs(actionEmitter)))
+    }), applyMiddleware(reduxPromise, reduxSockjs))
 
     const addUserOnServer = async (action) => {
       /* pretend insert user to db and get new user with id */
@@ -158,7 +169,15 @@ describe.only('middle ware', function testMiddleware() {
       payload: { name: 'another user 1' },
     })
 
-    await global.sleep(10)
+    // await global.sleep(10)
+    /* wait until last action is received */
+    await new Promise(resolve => {
+      reduxClient.receive(action => {
+        if (action.payload.name === 'another user 1') {
+          resolve()
+        }
+      })
+    })
 
     const stateUser = clientStore.getState().user
     expect(stateUser.length).toBe(3)

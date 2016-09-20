@@ -3,7 +3,7 @@ import ReduxChannel from './reduxChannel'
 
 
 export default ({
-  port = 3060,
+  port = 3000,
   domain = '127.0.0.1',
   sockjsPrefix = '/sockjs',
   protocal = 'http',

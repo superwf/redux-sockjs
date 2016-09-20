@@ -1,4 +1,3 @@
-import findIndex from 'lodash/findIndex'
 import EventEmitter from 'events'
 import warn from '../lib/warn'
 
@@ -11,32 +10,25 @@ class Emitter extends EventEmitter {
     super()
     this.socket = socket
     this.setMaxListeners(100)
-
     this.onconnection = this.onconnection.bind(this)
     socket.on('connection', this.onconnection)
-    // console.log(socket.listeners('connection').length)
   }
 
   onconnection(connection) {
     connections.push(connection)
-    // console.log(connections.length)
     this.connection = connection
     this.ondata = this.ondata.bind(this)
     connection.on('data', this.ondata)
-
     connection.on('close', () => {
-      // this.emit('close')
       connection.removeAllListeners()
       connection.close()
-      const index = findIndex(connections, connection)
+      const index = connections.findIndex(c => c === connection)
       connections.splice(index, 1)
     })
     this.emit('open')
-    // console.log('server emitter open')
   }
 
   ondata(message) {
-    // console.log(message)
     try {
       const data = JSON.parse(message)
       this.emit('data', data)
@@ -45,15 +37,12 @@ class Emitter extends EventEmitter {
     }
   }
 
-  // emit data to connection
-  // no eventName, only data
+  /* emit data to connection no eventName, only data */
   send(data) {
-    // console.log(data)
     this.connection.write(JSON.stringify(data))
   }
 
   broadcast(data, includeSelf = true) {
-    // console.log('broadcast', data)
     connections.forEach(connection => {
       if (!includeSelf && this.connection === connection) {
         return

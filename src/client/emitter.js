@@ -32,8 +32,7 @@ class Emitter extends EventEmitter {
     }
   }
 
-  // send data to socket
-  // no eventName, only data
+  /* send data to socket no eventName, only data */
   send(data) {
     this.connection.send(JSON.stringify(data))
   }

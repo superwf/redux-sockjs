@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import reduxPromise from 'redux-promise'
-import { connect, Provider } from 'react-redux'
 import { createStore, combineReducers, applyMiddleware, bindActionCreators, compose } from 'redux'
-import { startReduxClient, createAction, middleware as reduxSockjsMiddleware } from '../../build/browser'
+import { connect, Provider } from 'react-redux'
 import { render } from 'react-dom'
+import { startReduxClient, createAction, middleware as reduxSockjsMiddleware } from '../../client'
 
 const clientChannel = startReduxClient({
   port: 3010,
@@ -44,7 +44,7 @@ class App extends Component {
   }
 }
 
-const [create, actionEmitter] = createAction(clientChannel)
+const create = createAction(clientChannel)
 
 const createUserAction = create('ADD_USER')
 
@@ -68,7 +68,7 @@ const reducer = (state = [], action) => {
 const store = createStore(combineReducers({
   users: reducer,
 }), compose(
-  applyMiddleware(reduxPromise, reduxSockjsMiddleware(actionEmitter)),
+  applyMiddleware(reduxPromise, reduxSockjsMiddleware),
   global.devToolsExtension ? global.devToolsExtension() : f => f
 ))
 

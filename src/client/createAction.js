@@ -2,9 +2,11 @@ import uuid from 'uuid'
 import EventEmitter from 'events'
 
 const ActionTypes = {
-  SOCKJS: '@@redux-sockjs',
-  NOOP_ACTION: '@@redux-sockjs-noop',
+  SOCKJS: '@@sockjs',
+  NOOP_ACTION: '@@sockjs-noop',
 }
+
+const actionEmitters = []
 
 
 /**
@@ -14,11 +16,11 @@ const ActionTypes = {
  */
 const createAction = (reduxChannel, timeoutInterval = 1000) => {
   const actionEmitter = new EventEmitter()
+  actionEmitters.push(actionEmitter)
   actionEmitter.setMaxListeners(100)
   const ondataFunc = action => {
     const { token } = action
     if (token && actionEmitter.listeners(token).length) {
-      // console.log('emit SOCKJS ', action)
       actionEmitter.emit(token, action)
     /* for action from other sockjs connection */
     } else {
@@ -27,13 +29,13 @@ const createAction = (reduxChannel, timeoutInterval = 1000) => {
   }
   reduxChannel.receive(ondataFunc)
   /* send payload to server
-   * sync model will return promise
+   * returnPromise model will return promise
    * async will return an empty action that should do nothing by redux store
    * */
-  return [(type, sync = true) => payload => {
-    if (sync) {
+  return (type, returnPromise = true) => payload => {
+    if (returnPromise) {
       return new Promise((resolve, reject) => {
-        const token = uuid()
+        const token = uuid.v1()
         reduxChannel.send({
           type,
           payload,
@@ -56,9 +58,9 @@ const createAction = (reduxChannel, timeoutInterval = 1000) => {
       payload,
     })
     return { type: ActionTypes.NOOP_ACTION }
-  }, actionEmitter]
+  }
 }
 
-export { ActionTypes }
+export { ActionTypes, actionEmitters }
 
 export default createAction
