@@ -1,4 +1,4 @@
-import { ActionTypes, actionEmitters } from './createAction'
+import { ActionTypes, actionEmitters } from './actionCreator'
 
 /* for action from other sockjs connection */
 const middleware = ({ dispatch }) => {

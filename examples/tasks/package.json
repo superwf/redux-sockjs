@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "redux-sockjs example tasks",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "start": "webpack-dev-server -c webpack.config.js --progress"
   },
@@ -28,7 +29,7 @@
     "react-redux": "^4.4.5",
     "redux": "^3.6.0",
     "redux-promise": "^0.5.3",
-    "redux-sockjs": "github:superwf/redux-sockjs",
+    "redux-sockjs": "0.0.1",
     "sockjs": "^0.3.17",
     "sockjs-client": "^1.1.1"
   }

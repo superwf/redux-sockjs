@@ -1,12 +1,12 @@
 import startReduxClient from './startReduxChannel'
-import createAction from './createAction'
+import actionCreator from './actionCreator'
 import createReducer from './createReducer'
-import middleware from './middleware'
+import reduxSockjs from './reduxSockjs'
 
 
 export {
   startReduxClient,
-  createAction,
+  actionCreator,
   createReducer,
-  middleware,
+  reduxSockjs,
 }

@@ -1,9 +1,9 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import reduxPromise from 'redux-promise'
 import { startReduxServer } from '../../../server'
-import { startReduxClient, createReducer } from '../../../client'
-import createAction from '../../client/createAction'
-import reduxSockjs from '../../client/middleware'
+import { startReduxClient } from '../../../client'
+import actionCreator from '../../client/actionCreator'
+import reduxSockjs from '../../client/reduxSockjs'
 import defaultHttpServer from '../../server/defaultHttpServer'
 // import warn from '../../lib/warn'
 
@@ -30,7 +30,7 @@ describe('middle ware', function testMiddleware() {
       return state
     }
 
-    const create = createAction(reduxClient)
+    const create = actionCreator(reduxClient)
     const createUser = create('ADD_USER', true)
 
     const clientStore = createStore(combineReducers({
@@ -117,7 +117,7 @@ describe('middle ware', function testMiddleware() {
       return state
     }
 
-    const create = createAction(reduxClient)
+    const create = actionCreator(reduxClient)
     const createUser = create('ADD_USER')
 
     const clientStore = createStore(combineReducers({

@@ -26,16 +26,16 @@ channel.receive(action => {
 
 ### on browser use webpack or browserify
 ```js
-import { startReduxClient, createAction as createReduxAction, middleware as reduxSockjs, createReducer } from 'redux-sockjs'
+import { startReduxClient, actionCreator, middleware as reduxSockjs, createReducer } from 'redux-sockjs'
 
-// when use createReduxAction, the reduxSockjs must be used and vice versa
+// when use actionCreator, the reduxSockjs must be used and vice versa
 
 const channel = startReduxClient({
   port: 1000, // port should be same with server
 })
 
 // channel must bound to createAction first, then use redux middle to create store
-const createAction = createReduxAction(channel)
+const createAction = actionCreator(channel)
 
 const createUser = createAction('ADD_USER')
 
@@ -60,16 +60,16 @@ channel.on('open', () => {
 
 if some server operation take too long, you can use promise action
 ```js
-import { startReduxClient, createAction as createReduxAction, middleware as reduxSockjs } from 'redux-sockjs'
+import { startReduxClient, createAction as actionCreator, middleware as reduxSockjs } from 'redux-sockjs'
 
-// when use createReduxAction, the reduxSockjs must be used and vice versa
+// when use actionCreator, the reduxSockjs must be used and vice versa
 
 const channel = startReduxClient({
   port: 1000, // port should be same with server
 })
 
 // channel must bound to createAction first, then use redux middle to create store
-const createAction = createReduxAction(channel)
+const createAction = actionCreator(channel)
 
 const createUser = createAction('ADD_USER', true)
 

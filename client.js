@@ -320,7 +320,7 @@ var actionEmitters = [];
  * @param {Number} timeoutInterval, unit milisecond
  * @return {Function} action creator that bound to reduxChannel
  */
-var createAction = function createAction(reduxChannel) {
+var reduxActionCreator = function reduxActionCreator(reduxChannel) {
   var timeoutInterval = arguments.length <= 1 || arguments[1] === undefined ? 1000 : arguments[1];
 
   var actionEmitter = new EventEmitter();
@@ -410,6 +410,6 @@ var middleware = function middleware(_ref) {
 };
 
 exports.startReduxClient = startReduxClient;
-exports.createAction = createAction;
+exports.actionCreator = reduxActionCreator;
 exports.createReducer = createReducer;
-exports.middleware = middleware;
+exports.reduxSockjs = middleware;

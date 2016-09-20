@@ -14,7 +14,7 @@ const actionEmitters = []
  * @param {Number} timeoutInterval, unit milisecond
  * @return {Function} action creator that bound to reduxChannel
  */
-const createAction = (reduxChannel, timeoutInterval = 1000) => {
+const reduxActionCreator = (reduxChannel, timeoutInterval = 1000) => {
   const actionEmitter = new EventEmitter()
   actionEmitters.push(actionEmitter)
   actionEmitter.setMaxListeners(100)
@@ -63,4 +63,4 @@ const createAction = (reduxChannel, timeoutInterval = 1000) => {
 
 export { ActionTypes, actionEmitters }
 
-export default createAction
+export default reduxActionCreator

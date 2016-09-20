@@ -3,7 +3,7 @@ import reduxPromise from 'redux-promise'
 import { createStore, combineReducers, applyMiddleware, bindActionCreators, compose } from 'redux'
 import { connect, Provider } from 'react-redux'
 import { render } from 'react-dom'
-import { startReduxClient, createAction, middleware as reduxSockjsMiddleware } from '../../client'
+import { startReduxClient, createAction, middleware as reduxSockjsMiddleware } from 'redux-sockjs'
 
 const clientChannel = startReduxClient({
   port: 3010,
