@@ -176,8 +176,7 @@ var Emitter = function (_EventEmitter) {
       }
     }
 
-    // send data to socket
-    // no eventName, only data
+    /* send data to socket no eventName, only data */
 
   }, {
     key: 'send',
@@ -300,7 +299,7 @@ var startReduxClient = (function () {
   var _ref$domain = _ref.domain;
   var domain = _ref$domain === undefined ? '127.0.0.1' : _ref$domain;
   var _ref$sockjsPrefix = _ref.sockjsPrefix;
-  var sockjsPrefix = _ref$sockjsPrefix === undefined ? '/sockjs' : _ref$sockjsPrefix;
+  var sockjsPrefix = _ref$sockjsPrefix === undefined ? '/sockjs-redux' : _ref$sockjsPrefix;
   var _ref$protocal = _ref.protocal;
   var protocal = _ref$protocal === undefined ? 'http' : _ref$protocal;
 
@@ -343,11 +342,11 @@ var createAction = function createAction(reduxChannel) {
    * async will return an empty action that should do nothing by redux store
    * */
   return function (type) {
-    var returnPromise = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+    var returnPromise = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
     return function (payload) {
       if (returnPromise) {
         return new Promise(function (resolve, reject) {
-          var token = uuid();
+          var token = uuid.v1();
           reduxChannel.send({
             type: type,
             payload: payload,

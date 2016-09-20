@@ -11,53 +11,100 @@ npm test
 
 ## Usage
 for es6 project, use stage-0 syntax
-### in server
+### on server
 
 ```js
-import { startReduxServer } from 'redux-sockjs'
+import { startReduxServer } from 'redux-sockjs/server'
 const channel = startReduxServer({
   port: 1000, // port should be same with browser
 })
 
 channel.receive(action => {
-  console.log(action) // action from browser
-  // here should do some redux operation
-  // store.dispatch(action)
-  store.dispatch(action)
-  channel.send(store.getState())
+  channel.broadcast(action)
 })
-
 ```
 
-### in browser use webpack or browserify
+### on browser use webpack or browserify
 ```js
-import { startReduxClient } from 'redux-sockjs'
+import { startReduxClient, createAction as createReduxAction, middleware as reduxSockjs, createReducer } from 'redux-sockjs'
+
+// when use createReduxAction, the reduxSockjs must be used and vice versa
+
 const channel = startReduxClient({
   port: 1000, // port should be same with server
 })
-channel.receive(action => {
-  console.log(action)
-})
+
+// channel must bound to createAction first, then use redux middle to create store
+const createAction = createReduxAction(channel)
+
+const createUser = createAction('ADD_USER')
+
+const userReducer = createReducer({
+  'INITIAL_STATE': (state, action) => action.payload,
+  'ADD_USER': (state, action) => [...state, action.payload],
+}, [])
+
+// use reduxPromise before reduxSockjs
+const store = createStore(combineReducers({
+  user: userReducer,
+}), applyMiddleware(reduxPromise, reduxSockjs))
+
 channel.on('open', () => {
-  channel.send({type: 'ADD_USER', payload: 'bob'})
+  store.dispatch(createUser({ name: 'bob' }))
 })
 
-channel.receive(action => {
-  console.log(action) // action is sent from server
-  // or do some redux operation
-  store.dispatch(action)
-})
+// it is async, when data send to server and broadcast to browser
+// store.getState().user will be [{ name: 'bob' }]
+
 ```
+
+if some server operation take too long, you can use promise action
+```js
+import { startReduxClient, createAction as createReduxAction, middleware as reduxSockjs } from 'redux-sockjs'
+
+// when use createReduxAction, the reduxSockjs must be used and vice versa
+
+const channel = startReduxClient({
+  port: 1000, // port should be same with server
+})
+
+// channel must bound to createAction first, then use redux middle to create store
+const createAction = createReduxAction(channel)
+
+const createUser = createAction('ADD_USER', true)
+
+const userReducer = createReducer({
+  'INITIAL_STATE': (state, action) => action.payload,
+  'ADD_USER': (state, action) => [...state, action.payload],
+}, [])
+
+// use reduxPromise before reduxSockjs
+const store = createStore(combineReducers({
+  user: userReducer,
+}), applyMiddleware(reduxPromise, reduxSockjs))
+
+channel.on('open', async () => {
+  await store.dispatch(createUser({ name: 'bob' }))
+  console.log(store.getState().user) // [{ name: 'bob' }]
+})
+
+// it is async, when data send to server and broadcast to browser
+// store.getState().user will be [{ name: 'bob' }]
+
+```
+
+## API
 
 ### startServer param
 if no param, just startServer(), it will use default param as below
 ```js
-startServer({
-  port = 3060,
+startReduxServer({
+  port = 3000,
   ip = '0.0.0.0',
-  sockjsPrefix = '/sockjs',
+  sockjsPrefix = '/sockjs-redux',
   log = () => {}, // a function for log of sockjs, reference from [sockjs-node doc](https://github.com/sockjs/sockjs-node)
-  server, // server should be http.Server instance or some instance like express inherite from http.Server, if not defined, will use a default http server
+  server, // server should be http.Server instance, if not defined, will use default server created by http.createServer()
+  // use https.createServer() when needed
 })
 ```
 
@@ -66,10 +113,10 @@ startServer({
 if no param, just startClient(), it will use default param as below
 the protocal should correspond to the server protocal
 ```js
-startClient({
-  port = 3060,
-  domain = '127.0.0.1',
-  sockjsPrefix = '/sockjs',
-  protocal = 'http',
+startReduxClient({
+  port = 3000,
+  domain = '127.0.0.1', // domain name or ip
+  sockjsPrefix = '/sockjs-redux',
+  protocal = 'http', // http or https
 })
 ```

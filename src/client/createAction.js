@@ -32,7 +32,7 @@ const createAction = (reduxChannel, timeoutInterval = 1000) => {
    * returnPromise model will return promise
    * async will return an empty action that should do nothing by redux store
    * */
-  return (type, returnPromise = true) => payload => {
+  return (type, returnPromise = false) => payload => {
     if (returnPromise) {
       return new Promise((resolve, reject) => {
         const token = uuid.v1()

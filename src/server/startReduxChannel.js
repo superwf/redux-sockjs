@@ -7,7 +7,7 @@ import defaultHttpServer from './defaultHttpServer'
 export default ({
   port = 3000,
   ip = '0.0.0.0',
-  sockjsPrefix = '/sockjs',
+  sockjsPrefix = '/sockjs-redux',
   log = identity,
   server, // server should be http.Server instance or some instance like express inherite from http.Server
 } = {}) => {

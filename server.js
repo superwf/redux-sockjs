@@ -154,10 +154,8 @@ var Emitter = function (_EventEmitter) {
 
     _this.socket = socket;
     _this.setMaxListeners(100);
-
     _this.onconnection = _this.onconnection.bind(_this);
     socket.on('connection', _this.onconnection);
-    // console.log(socket.listeners('connection').length)
     return _this;
   }
 
@@ -165,13 +163,10 @@ var Emitter = function (_EventEmitter) {
     key: 'onconnection',
     value: function onconnection(connection) {
       connections.push(connection);
-      // console.log(connections.length)
       this.connection = connection;
       this.ondata = this.ondata.bind(this);
       connection.on('data', this.ondata);
-
       connection.on('close', function () {
-        // this.emit('close')
         connection.removeAllListeners();
         connection.close();
         var index = connections.findIndex(function (c) {
@@ -180,12 +175,10 @@ var Emitter = function (_EventEmitter) {
         connections.splice(index, 1);
       });
       this.emit('open');
-      // console.log('server emitter open')
     }
   }, {
     key: 'ondata',
     value: function ondata(message) {
-      // console.log(message)
       try {
         var data = JSON.parse(message);
         this.emit('data', data);
@@ -194,13 +187,11 @@ var Emitter = function (_EventEmitter) {
       }
     }
 
-    // emit data to connection
-    // no eventName, only data
+    /* emit data to connection no eventName, only data */
 
   }, {
     key: 'send',
     value: function send(data) {
-      // console.log(data)
       this.connection.write(JSON.stringify(data));
     }
   }, {
@@ -210,7 +201,6 @@ var Emitter = function (_EventEmitter) {
 
       var includeSelf = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
-      // console.log('broadcast', data)
       connections.forEach(function (connection) {
         if (!includeSelf && _this2.connection === connection) {
           return;
@@ -365,7 +355,7 @@ var startReduxServer = (function () {
   var _ref$ip = _ref.ip;
   var ip = _ref$ip === undefined ? '0.0.0.0' : _ref$ip;
   var _ref$sockjsPrefix = _ref.sockjsPrefix;
-  var sockjsPrefix = _ref$sockjsPrefix === undefined ? '/sockjs' : _ref$sockjsPrefix;
+  var sockjsPrefix = _ref$sockjsPrefix === undefined ? '/sockjs-redux' : _ref$sockjsPrefix;
   var _ref$log = _ref.log;
   var log = _ref$log === undefined ? identity : _ref$log;
   var server = _ref.server;
