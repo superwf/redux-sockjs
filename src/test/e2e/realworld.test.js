@@ -15,7 +15,9 @@ describe('real world', () => {
       server: httpServer,
     })
     const emitter = new EventEmitter()
-    const reduxClient = startReduxClient()
+    const reduxClient = startReduxClient({
+      reconnectInterval: 0,
+    })
 
     const timeoutInterval = 1000
     /* browser side redux action, reducer, store */
@@ -110,7 +112,9 @@ describe('real world', () => {
 
 
     /* another client connect this channel */
-    const reduxClient1 = startReduxClient()
+    const reduxClient1 = startReduxClient({
+      reconnectInterval: 0,
+    })
     // warn(reduxServer.socket.listeners('connection').length)
     const token1 = uuid()
     reduxClient1.on('open', () => {
@@ -128,7 +132,9 @@ describe('real world', () => {
       })
     })
 
-    const reduxClient2 = startReduxClient()
+    const reduxClient2 = startReduxClient({
+      reconnectInterval: 0,
+    })
     const token2 = uuid()
     reduxClient2.on('open', () => {
       reduxClient2.send({

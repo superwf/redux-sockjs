@@ -2,7 +2,8 @@ import EventEmitter from 'events'
 import Channel from '../../client/channel'
 import Emitter from '../../client/emitter'
 
-describe('client/channel', () => {
+describe('client/channel', function clientChannelTest() {
+  this.slow(1000)
   let channel
   let socket
   const channelName = 'A'
@@ -100,7 +101,8 @@ describe('client/channel', () => {
     })
 
     it('emitter onclose', () => {
-      const spy = expect.spyOn(channel, 'destroy')
+      const spy = expect.createSpy()
+      channel.on('close', spy)
       channel.emitter.emit('close')
       expect(spy).toHaveBeenCalled()
     })
@@ -114,12 +116,25 @@ describe('client/channel', () => {
       channel.receive(() => {})
 
       channel.destroy()
-
-      expect(channel.emitter.listeners('open').length > 0).toBe(false)
-      expect(channel.emitter.listeners('data').length > 0).toBe(false)
-      expect(channel.emitter.listeners('close').length > 0).toBe(false)
       expect(channel.listeners('abc').length > 0).toBe(false)
-      expect(channel._ondataFuncs).toBe(null)
     })
+  })
+
+  it('reconnect, no server on 30000, so "close" will be emitted immediately', done => {
+    const socket1 = new EventEmitter()
+    socket1.url = 'http://127.0.0.1:30000/sockjs-redux'
+    const channel1 = new Channel(socket1, 'redux')
+    const originEmitter = channel1.emitter
+    const spy = expect.spyOn(channel1, 'reconnect').andCallThrough()
+    channel1.reconnect(5, 2)
+    expect(originEmitter.listeners('close').length).toBe(0)
+    expect(channel1.emitter).toNotBe(originEmitter)
+    expect(channel1.emitter.listeners('open').length).toBe(1)
+    expect(channel1.emitter.listeners('data').length).toBe(1)
+    expect(channel1.emitter.listeners('close').length).toBe(2)
+    setTimeout(() => {
+      expect(spy.calls.length).toBe(2)
+      done()
+    }, 20)
   })
 })

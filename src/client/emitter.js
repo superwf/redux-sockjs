@@ -23,6 +23,21 @@ class Emitter extends EventEmitter {
     }
   }
 
+  reconnect(connection) {
+    this.destroy()
+    this.connection = connection
+    this.connection.onopen = () => {
+      this.emit('open')
+    }
+
+    this.connection.onmessage = this.onmessage
+
+    this.connection.onclose = () => {
+      this.emit('close')
+      this.destroy()
+    }
+  }
+
   onmessage(evt) {
     try {
       const data = JSON.parse(evt.data)

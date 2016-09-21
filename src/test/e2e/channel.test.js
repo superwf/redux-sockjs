@@ -8,6 +8,7 @@ describe('start channel for server and client', () => {
       // port: 10001,
       // sockjsPrefix: '/sockjs-prefix',
       channelName: 'channel test name',
+      reconnectInterval: 0,
     }
     const { channel: serverChannel, httpServer } = startServer(param)
     const clientChannel = startClient(param)
@@ -30,6 +31,7 @@ describe('start channel for server and client', () => {
       port: 10001,
       sockjsPrefix: '/sockjs-prefix',
       channelName: 'channel test name',
+      reconnectInterval: 0,
     }
     const { channel: serverChannel, httpServer } = startServer(param)
     const clientChannel = startClient({ ...param, channelName: 'other channel' })
@@ -52,6 +54,7 @@ describe('start channel for server and client', () => {
       port: 10001,
       sockjsPrefix: '/sockjs-prefix',
       channelName: 'channel test name',
+      reconnectInterval: 0,
     }
     const { channel: serverChannel, httpServer } = startServer(param)
     const clientChannel = startClient(param)

@@ -60,13 +60,10 @@ describe('server/channel', () => {
       expect(channel.emitter.listeners('data')).toEqual([channel.ondata])
       expect(channel.emitter.listeners('close')).toEqual([channel.onclose])
       channel.receive(() => {})
-      const spy = expect.spyOn(channel, 'destroy').andCallThrough()
+      const spy = expect.createSpy()
+      channel.on('close', spy)
       channel.emitter.emit('close')
       expect(spy).toHaveBeenCalled()
-      expect(channel.emitter.listeners('open')).toEqual([])
-      expect(channel.emitter.listeners('data')).toEqual([])
-      expect(channel.emitter.listeners('close')).toEqual([])
-      expect(channel._ondataFuncs).toBe(null)
     })
 
     it('broadcast', () => {

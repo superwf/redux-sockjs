@@ -11,7 +11,7 @@ class Todos extends Component {
   constructor() {
     super()
     this.state = {
-      title: 'xxx',
+      title: 'new todo',
     }
   }
 
@@ -39,7 +39,7 @@ class Todos extends Component {
     return <div>
       <form onSubmit={this.addTodo.bind(this)}>
         <input type="text" value={this.state.title} onChange={e => this.setState({ title: e.target.value })} />
-        <button type="submit">Submit</button>
+        <button type="submit">add todo</button>
       </form>
       {this.renderTodos()}
     </div>

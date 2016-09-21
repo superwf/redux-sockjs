@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 
-// multiple channel for single connection
+/* multiple channel for single connection */
 export default Emitter => class Channel extends EventEmitter {
   /*
    * @param Object instance of server/eventEmitter
@@ -45,7 +45,7 @@ export default Emitter => class Channel extends EventEmitter {
   }
 
   onclose() {
-    this.destroy()
+    this.emit('close')
   }
 
  /* send with channel by this.emitter to browser
@@ -54,13 +54,8 @@ export default Emitter => class Channel extends EventEmitter {
     this.emitter.send({ type: 'channel', channel: this.channelName, data })
   }
 
-  // clear all listeners, free memory
+  /* clear all listeners, free memory */
   destroy() {
     this.removeAllListeners()
-    this._ondataFuncs = null
-    const { emitter } = this
-    emitter.removeListener('open', this.onopen)
-    emitter.removeListener('data', this.ondata)
-    emitter.removeListener('close', this.onclose)
   }
 }

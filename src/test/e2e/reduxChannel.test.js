@@ -11,6 +11,7 @@ describe('startReduxChannel for server and client', function testStartReduxChann
       ip: '127.0.0.1',
       port: 10002,
       sockjsPrefix: '/sockjs-redux',
+      reconnectInterval: 0,
     }
     const serverChannel = startReduxServer({ ...param, server: httpServer })
     const clientChannel = startReduxClient(param)
@@ -32,6 +33,7 @@ describe('startReduxChannel for server and client', function testStartReduxChann
       ip: '127.0.0.1',
       port: 10003,
       sockjsPrefix: '/sockjs-redux',
+      reconnectInterval: 0,
     }
 
 

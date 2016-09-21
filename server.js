@@ -162,6 +162,8 @@ var Emitter = function (_EventEmitter) {
   createClass(Emitter, [{
     key: 'onconnection',
     value: function onconnection(connection) {
+      var _this2 = this;
+
       connections.push(connection);
       this.connection = connection;
       this.ondata = this.ondata.bind(this);
@@ -173,6 +175,7 @@ var Emitter = function (_EventEmitter) {
           return c === connection;
         });
         connections.splice(index, 1);
+        _this2.destroy();
       });
       this.emit('open');
     }
@@ -197,12 +200,12 @@ var Emitter = function (_EventEmitter) {
   }, {
     key: 'broadcast',
     value: function broadcast(data) {
-      var _this2 = this;
+      var _this3 = this;
 
       var includeSelf = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
       connections.forEach(function (connection) {
-        if (!includeSelf && _this2.connection === connection) {
+        if (!includeSelf && _this3.connection === connection) {
           return;
         }
         connection.write(JSON.stringify(data));
@@ -219,7 +222,7 @@ var Emitter = function (_EventEmitter) {
 
 Emitter.connections = connections;
 
-// multiple channel for single connection
+/* multiple channel for single connection */
 var generateChannel = (function (Emitter) {
   return function (_EventEmitter) {
     inherits(Channel, _EventEmitter);
@@ -284,7 +287,7 @@ var generateChannel = (function (Emitter) {
     }, {
       key: 'onclose',
       value: function onclose() {
-        this.destroy();
+        this.emit('close');
       }
 
       /* send with channel by this.emitter to browser
@@ -296,18 +299,12 @@ var generateChannel = (function (Emitter) {
         this.emitter.send({ type: 'channel', channel: this.channelName, data: data });
       }
 
-      // clear all listeners, free memory
+      /* clear all listeners, free memory */
 
     }, {
       key: 'destroy',
       value: function destroy() {
         this.removeAllListeners();
-        this._ondataFuncs = null;
-        var emitter = this.emitter;
-
-        emitter.removeListener('open', this.onopen);
-        emitter.removeListener('data', this.ondata);
-        emitter.removeListener('close', this.onclose);
       }
     }]);
     return Channel;

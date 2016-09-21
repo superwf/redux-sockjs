@@ -24,6 +24,7 @@ class Emitter extends EventEmitter {
       connection.close()
       const index = connections.findIndex(c => c === connection)
       connections.splice(index, 1)
+      this.destroy()
     })
     this.emit('open')
   }

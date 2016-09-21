@@ -166,6 +166,24 @@ var Emitter = function (_EventEmitter) {
   }
 
   createClass(Emitter, [{
+    key: 'reconnect',
+    value: function reconnect(connection) {
+      var _this2 = this;
+
+      this.destroy();
+      this.connection = connection;
+      this.connection.onopen = function () {
+        _this2.emit('open');
+      };
+
+      this.connection.onmessage = this.onmessage;
+
+      this.connection.onclose = function () {
+        _this2.emit('close');
+        _this2.destroy();
+      };
+    }
+  }, {
     key: 'onmessage',
     value: function onmessage(evt) {
       try {
@@ -192,7 +210,7 @@ var Emitter = function (_EventEmitter) {
   return Emitter;
 }(EventEmitter);
 
-// multiple channel for single connection
+/* multiple channel for single connection */
 var generateChannel = (function (Emitter) {
   return function (_EventEmitter) {
     inherits(Channel, _EventEmitter);
@@ -257,7 +275,7 @@ var generateChannel = (function (Emitter) {
     }, {
       key: 'onclose',
       value: function onclose() {
-        this.destroy();
+        this.emit('close');
       }
 
       /* send with channel by this.emitter to browser
@@ -269,18 +287,12 @@ var generateChannel = (function (Emitter) {
         this.emitter.send({ type: 'channel', channel: this.channelName, data: data });
       }
 
-      // clear all listeners, free memory
+      /* clear all listeners, free memory */
 
     }, {
       key: 'destroy',
       value: function destroy() {
         this.removeAllListeners();
-        this._ondataFuncs = null;
-        var emitter = this.emitter;
-
-        emitter.removeListener('open', this.onopen);
-        emitter.removeListener('data', this.ondata);
-        emitter.removeListener('close', this.onclose);
       }
     }]);
     return Channel;
@@ -289,7 +301,41 @@ var generateChannel = (function (Emitter) {
 
 var Channel = generateChannel(Emitter);
 
-var ReduxChannel = generate(Channel);
+var ClientChannel = function (_Channel) {
+  inherits(ClientChannel, _Channel);
+
+  function ClientChannel() {
+    classCallCheck(this, ClientChannel);
+    return possibleConstructorReturn(this, (ClientChannel.__proto__ || Object.getPrototypeOf(ClientChannel)).apply(this, arguments));
+  }
+
+  createClass(ClientChannel, [{
+    key: 'reconnect',
+    value: function reconnect(interval, maxRetry) {
+      var _this2 = this;
+
+      this.emitter.destroy();
+      this.socket = new SockJS(this.socket.url);
+      var emitter = new Emitter(this.socket);
+      emitter.on('open', this.onopen);
+      emitter.on('data', this.ondata);
+      emitter.on('close', this.onclose);
+      if (interval > 0 && maxRetry > 1) {
+        emitter.on('close', function () {
+          emitter.destroy();
+          _this2.emit('reconnecting');
+          setTimeout(function () {
+            _this2.reconnect(interval, maxRetry - 1);
+          }, interval);
+        });
+      }
+      this.emitter = emitter;
+    }
+  }]);
+  return ClientChannel;
+}(Channel);
+
+var ReduxChannel = generate(ClientChannel);
 
 var startReduxClient = (function () {
   var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -302,9 +348,17 @@ var startReduxClient = (function () {
   var sockjsPrefix = _ref$sockjsPrefix === undefined ? '/sockjs-redux' : _ref$sockjsPrefix;
   var _ref$protocal = _ref.protocal;
   var protocal = _ref$protocal === undefined ? 'http' : _ref$protocal;
+  var _ref$reconnectInterva = _ref.reconnectInterval;
+  var reconnectInterval = _ref$reconnectInterva === undefined ? 0 : _ref$reconnectInterva;
+  var _ref$reconnectMax = _ref.reconnectMax;
+  var reconnectMax = _ref$reconnectMax === undefined ? 0 : _ref$reconnectMax;
 
-  var socket = new SockJS(protocal + '://' + domain + ':' + port + sockjsPrefix);
+  var connectUrl = protocal + '://' + domain + ':' + port + sockjsPrefix;
+  var socket = new SockJS(connectUrl);
   var reduxChannel = new ReduxChannel(socket);
+  if (reconnectInterval > 0 && reconnectMax > 0) {
+    reduxChannel.reconnect(reconnectInterval, reconnectMax);
+  }
   return reduxChannel;
 });
 

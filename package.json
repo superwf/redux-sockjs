@@ -1,6 +1,6 @@
 {
   "name": "redux-sockjs",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "use sockjs to pub and sub redux action on server and client",
   "main": "client.js",
   "repository": {

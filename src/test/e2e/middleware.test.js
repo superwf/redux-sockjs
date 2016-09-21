@@ -19,6 +19,7 @@ describe('middle ware', function testMiddleware() {
     })
     const reduxClient = startReduxClient({
       port,
+      reconnectInterval: 0,
     })
 
     const create = actionCreator(reduxClient)
@@ -98,7 +99,11 @@ describe('middle ware', function testMiddleware() {
 
   it('test middleware async action', async () => {
     const httpServer = defaultHttpServer()
-    const param = { port: 10000, server: httpServer }
+    const param = {
+      port: 10000,
+      server: httpServer,
+      reconnectInterval: 0,
+    }
     const reduxServer = startReduxServer(param)
     const reduxClient = startReduxClient(param)
 

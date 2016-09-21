@@ -1,7 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import reduxPromise from 'redux-promise'
-import { reduxSockjs } from 'redux-sockjs'
-
+import { reduxSockjs } from '../../client'
 import reducer from './reducers'
 
 const store = createStore(reducer, compose(
