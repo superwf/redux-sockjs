@@ -1,6 +1,6 @@
 {
   "name": "redux-sockjs",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "use sockjs to pub and sub redux action on server and client",
   "main": "client.js",
   "repository": {
@@ -13,7 +13,8 @@
     "build": "npm run build:client; npm run build:server",
     "test": "NODE_ENV=test mocha --opts src/test/mocha.opts src/test",
     "test:dev": "NODE_ENV=test mocha --watch --opts src/test/mocha.opts src/test",
-    "cover": "NODE_ENV=test babel-node ./node_modules/.bin/isparta cover _mocha -- --opts src/test/mocha.opts"
+    "cover": "NODE_ENV=test babel-node ./node_modules/.bin/isparta cover _mocha -- --opts src/test/mocha.opts",
+    "prepublish": "npm run build"
   },
   "keywords": [
     "redux",

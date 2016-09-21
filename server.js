@@ -316,17 +316,15 @@ var generateChannel = (function (Emitter) {
 
 var Channel = generateChannel(Emitter);
 
-var ReduxChannel = generate(Channel);
+var ServerChannel = function (_Channel) {
+  inherits(ServerChannel, _Channel);
 
-var ReduxServerChannel = function (_ReduxChannel) {
-  inherits(ReduxServerChannel, _ReduxChannel);
-
-  function ReduxServerChannel() {
-    classCallCheck(this, ReduxServerChannel);
-    return possibleConstructorReturn(this, (ReduxServerChannel.__proto__ || Object.getPrototypeOf(ReduxServerChannel)).apply(this, arguments));
+  function ServerChannel() {
+    classCallCheck(this, ServerChannel);
+    return possibleConstructorReturn(this, (ServerChannel.__proto__ || Object.getPrototypeOf(ServerChannel)).apply(this, arguments));
   }
 
-  createClass(ReduxServerChannel, [{
+  createClass(ServerChannel, [{
     key: 'broadcast',
     value: function broadcast(data) {
       var includeSelf = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
@@ -334,8 +332,10 @@ var ReduxServerChannel = function (_ReduxChannel) {
       this.emitter.broadcast({ type: 'channel', channel: this.channelName, data: data }, includeSelf);
     }
   }]);
-  return ReduxServerChannel;
-}(ReduxChannel);
+  return ServerChannel;
+}(Channel);
+
+var ReduxChannel = generate(ServerChannel);
 
 var defaultHttpServer = (function () {
   var server = http.createServer();
@@ -364,7 +364,7 @@ var startReduxServer = (function () {
     sockjs_url: 'http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js',
     log: log
   });
-  var channel = new ReduxServerChannel(sockserver);
+  var channel = new ReduxChannel(sockserver);
 
   var httpServer = server || defaultHttpServer();
 
