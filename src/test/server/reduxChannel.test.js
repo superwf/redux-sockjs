@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import ReduxChannel, { Channels } from '../../server/reduxChannel'
+import ReduxChannel from '../../server/reduxChannel'
 import Channel from '../../server/channel'
 
 describe('server/reduxChannel', () => {
@@ -56,24 +56,6 @@ describe('server/reduxChannel', () => {
       expect(() => {
         reduxChannel.emitter.emit('data', data2)
       }).toThrow()
-      // console.log(Channels.length)
     })
-  })
-
-  it('broadcast', () => {
-    const socket = new EventEmitter()
-    const connection = new EventEmitter()
-    connection.write = () => {}
-    const reduxChannel = new ReduxChannel(socket)
-    socket.emit('connection', connection)
-    
-    const spy = expect.spyOn(connection, 'write')
-    const data = { type: 'xxx', payload: 'xxx' }
-    reduxChannel.broadcast(data)
-    expect(spy).toHaveBeenCalledWith(JSON.stringify({
-      type: 'channel',
-      channel: 'redux',
-      data,
-    }))
   })
 })

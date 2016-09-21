@@ -68,18 +68,17 @@ describe('server/channel', () => {
       expect(channel.emitter.listeners('close')).toEqual([])
       expect(channel._ondataFuncs).toBe(null)
     })
-  })
 
-  it('broadcast', () => {
-    connection.write = () => {}
-    socket.emit('connection', connection)
-    const spy = expect.spyOn(connection, 'write')
-    const data = { type: 'xxx', payload: 'xxx' }
-    channel.broadcast(data)
-    expect(spy).toHaveBeenCalledWith(JSON.stringify({
-      type: 'channel',
-      channel: 'A',
-      data,
-    }))
+    it('broadcast', () => {
+      connection.write = () => {}
+      const spy = expect.spyOn(connection, 'write')
+      const data = { type: 'xxx', payload: 'xxx' }
+      channel.broadcast(data)
+      expect(spy).toHaveBeenCalledWith(JSON.stringify({
+        type: 'channel',
+        channel: channelName,
+        data,
+      }))
+    })
   })
 })
