@@ -14,7 +14,9 @@ export default ({
   const socket = new SockJS(connectUrl)
   const reduxChannel = new ReduxChannel(socket)
   if (reconnectInterval > 0 && reconnectMax > 0) {
-    reduxChannel.reconnect(reconnectInterval, reconnectMax)
+    reduxChannel.once('close', () => {
+      reduxChannel.reconnect(reconnectInterval, reconnectMax)
+    })
   }
   return reduxChannel
 }

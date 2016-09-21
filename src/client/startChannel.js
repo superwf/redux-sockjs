@@ -1,6 +1,5 @@
 import SockJS from 'sockjs-client'
 import Channel from './channel'
-import reconnect from './reconnect'
 
 
 export default ({
@@ -9,14 +8,16 @@ export default ({
   sockjsPrefix = '/sockjs',
   protocal = 'http',
   channelName,
-  reconnectInterval = 5000,
+  reconnectInterval = 0,
+  reconnectMax = 0,
 } = {}) => {
   const connectUrl = `${protocal}://${domain}:${port}${sockjsPrefix}`
   const socket = new SockJS(connectUrl)
   const channel = new Channel(socket, channelName)
-  if (reconnectInterval > 0) {
-    const reconnectChannel = reconnect(reconnectInterval)
-    channel.on('close', () => reconnectChannel(channel))
+  if (reconnectInterval > 0 && reconnectMax > 0) {
+    channel.once('close', () => {
+      channel.reconnect(reconnectInterval, reconnectMax)
+    })
   }
   return channel
 }

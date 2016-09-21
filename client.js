@@ -314,6 +314,7 @@ var ClientChannel = function (_Channel) {
     value: function reconnect(interval, maxRetry) {
       var _this2 = this;
 
+      console.log(maxRetry);
       this.emitter.destroy();
       this.socket = new SockJS(this.socket.url);
       var emitter = new Emitter(this.socket);
@@ -357,7 +358,9 @@ var startReduxClient = (function () {
   var socket = new SockJS(connectUrl);
   var reduxChannel = new ReduxChannel(socket);
   if (reconnectInterval > 0 && reconnectMax > 0) {
-    reduxChannel.reconnect(reconnectInterval, reconnectMax);
+    reduxChannel.once('close', function () {
+      reduxChannel.reconnect(reconnectInterval, reconnectMax);
+    });
   }
   return reduxChannel;
 });

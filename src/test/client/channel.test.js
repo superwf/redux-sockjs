@@ -120,21 +120,30 @@ describe('client/channel', function clientChannelTest() {
     })
   })
 
-  it('reconnect, no server on 30000, so "close" will be emitted immediately', done => {
+  it('reconnect, no server on port 30000, so "close" will be emitted immediately', done => {
     const socket1 = new EventEmitter()
     socket1.url = 'http://127.0.0.1:30000/sockjs-redux'
     const channel1 = new Channel(socket1, 'redux')
     const originEmitter = channel1.emitter
     const spy = expect.spyOn(channel1, 'reconnect').andCallThrough()
-    channel1.reconnect(5, 2)
+    channel1.reconnect(5, 4)
+    expect(channel1.retryCount).toBe(4)
+    expect(channel1.maxRetry).toBe(4)
+
+    let time = 4
+    channel1.on('close', () => {
+      expect(channel1.retryCount).toBe(time)
+      time -= 1
+    })
+
     expect(originEmitter.listeners('close').length).toBe(0)
     expect(channel1.emitter).toNotBe(originEmitter)
-    expect(channel1.emitter.listeners('open').length).toBe(1)
+    expect(channel1.emitter.listeners('open').length).toBe(2)
     expect(channel1.emitter.listeners('data').length).toBe(1)
     expect(channel1.emitter.listeners('close').length).toBe(2)
     setTimeout(() => {
-      expect(spy.calls.length).toBe(2)
+      expect(spy.calls.length).toBe(4)
       done()
-    }, 20)
+    }, 50)
   })
 })
