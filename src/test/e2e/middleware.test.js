@@ -3,6 +3,7 @@ import reduxPromise from 'redux-promise'
 import { startReduxServer } from '../../../server'
 import { startReduxClient } from '../../../client'
 import actionCreator from '../../client/actionCreator'
+import createReducer from '../../client/createReducer'
 import reduxSockjs from '../../client/reduxSockjs'
 import defaultHttpServer from '../../server/defaultHttpServer'
 // import warn from '../../lib/warn'
@@ -20,21 +21,16 @@ describe('middle ware', function testMiddleware() {
       port,
     })
 
-    const userReducerOnClient = (state = [], action) => {
-      if (action.type === 'INITIAL_STATE') {
-        return action.payload
-      }
-      if (action.type === 'ADD_USER') {
-        return [...state, action.payload]
-      }
-      return state
-    }
-
     const create = actionCreator(reduxClient)
     const createUser = create('ADD_USER', true)
 
+    const userReducer = createReducer({
+      INITIAL_STATE: (state, action) => action.payload,
+      [createUser]: (state, action) => [...state, action.payload],
+    }, [])
+
     const clientStore = createStore(combineReducers({
-      user: userReducerOnClient,
+      user: userReducer,
     }), applyMiddleware(reduxPromise, reduxSockjs))
 
     const addUserOnServer = async (action) => {

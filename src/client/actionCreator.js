@@ -32,32 +32,36 @@ const reduxActionCreator = (reduxChannel, timeoutInterval = 1000) => {
    * returnPromise model will return promise
    * async will return an empty action that should do nothing by redux store
    * */
-  return (type, returnPromise = false) => payload => {
-    if (returnPromise) {
-      return new Promise((resolve, reject) => {
-        const token = uuid.v1()
-        reduxChannel.send({
-          type,
-          payload,
-          token,
+  return (type, returnPromise = false) => {
+    const createdAction = payload => {
+      if (returnPromise) {
+        return new Promise((resolve, reject) => {
+          const token = uuid.v1()
+          reduxChannel.send({
+            type,
+            payload,
+            token,
+          })
+          let timer = 0
+          const resolver = action => {
+            resolve(action)
+            clearTimeout(timer)
+          }
+          timer = setTimeout(() => {
+            actionEmitter.removeListener(token, resolver)
+            reject(`type: ${type}, token: ${token}, payload: ${payload} failed because timeout more than ${timeoutInterval}`)
+          }, timeoutInterval)
+          actionEmitter.once(token, resolver)
         })
-        let timer = 0
-        const resolver = action => {
-          resolve(action)
-          clearTimeout(timer)
-        }
-        timer = setTimeout(() => {
-          actionEmitter.removeListener(token, resolver)
-          reject(`type: ${type}, token: ${token}, payload: ${payload} failed because timeout more than ${timeoutInterval}`)
-        }, timeoutInterval)
-        actionEmitter.once(token, resolver)
+      }
+      reduxChannel.send({
+        type,
+        payload,
       })
+      return { type: ActionTypes.NOOP_ACTION }
     }
-    reduxChannel.send({
-      type,
-      payload,
-    })
-    return { type: ActionTypes.NOOP_ACTION }
+    createdAction.toString = () => type
+    return createdAction
   }
 }
 

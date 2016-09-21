@@ -343,7 +343,8 @@ var reduxActionCreator = function reduxActionCreator(reduxChannel) {
    * */
   return function (type) {
     var returnPromise = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-    return function (payload) {
+
+    var createdAction = function createdAction(payload) {
       if (returnPromise) {
         return new Promise(function (resolve, reject) {
           var token = uuid.v1();
@@ -370,6 +371,10 @@ var reduxActionCreator = function reduxActionCreator(reduxChannel) {
       });
       return { type: ActionTypes.NOOP_ACTION };
     };
+    createdAction.toString = function () {
+      return type;
+    };
+    return createdAction;
   };
 };
 
@@ -383,6 +388,7 @@ var createReducer = function createReducer(reducerMap, initialState) {
     var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
     var action = arguments[1];
     var type = action.type;
+    // console.log(Object.keys(reducerMap))
 
     if (type in reducerMap) {
       return reducerMap[type](state, action);

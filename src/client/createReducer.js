@@ -5,6 +5,7 @@
  */
 const createReducer = (reducerMap, initialState) => (state = initialState, action) => {
   const { type } = action
+  // console.log(Object.keys(reducerMap))
   if (type in reducerMap) {
     return reducerMap[type](state, action)
   }

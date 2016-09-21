@@ -383,6 +383,7 @@ var createReducer = function createReducer(reducerMap, initialState) {
     var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
     var action = arguments[1];
     var type = action.type;
+    // console.log(Object.keys(reducerMap))
 
     if (type in reducerMap) {
       return reducerMap[type](state, action);
