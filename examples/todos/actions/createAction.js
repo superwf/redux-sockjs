@@ -5,6 +5,7 @@ const channel = startReduxClient({
   sockjsPrefix: '/sockjs-redux',
   reconnectInterval: 3000,
   reconnectMax: 30,
+  // protocal: 'https',
 })
 
 const createAction = actionCreator(channel)

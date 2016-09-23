@@ -1,4 +1,6 @@
 import http from 'http'
+// import https from 'https'
+// import fs from 'fs'
 import { isFSA } from 'flux-standard-action'
 import remove from 'lodash/remove'
 import { startReduxServer } from 'redux-sockjs/server'
@@ -8,6 +10,10 @@ function isPromise(promise) {
 }
 
 const server = http.createServer()
+// const server = https.createServer({
+//   key: fs.readFileSync('./cert/privatekey.pem'),
+//   cert: fs.readFileSync('./cert/certificate.pem'),
+// })
 
 const reduxChannel = startReduxServer({
   server,
@@ -49,7 +55,7 @@ const actions = {
 
 const broadcast = reduxChannel.broadcast.bind(reduxChannel)
 reduxChannel.receive(action => {
-  console.log(action)
+  // console.log(action)
   const result = actions[action.type](action)
   if (isPromise(result.payload)) {
     result.payload.then(data => {
