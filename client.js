@@ -314,19 +314,27 @@ var ClientChannel = function (_Channel) {
     value: function reconnect(interval, maxRetry) {
       var _this2 = this;
 
-      console.log(maxRetry);
+      if (maxRetry) {
+        this.maxRetry = maxRetry;
+        this.retryCount = maxRetry;
+      } else {
+        this.retryCount -= 1;
+      }
       this.emitter.destroy();
       this.socket = new SockJS(this.socket.url);
       var emitter = new Emitter(this.socket);
       emitter.on('open', this.onopen);
+      emitter.once('open', function () {
+        _this2.retryCount = _this2.maxRetry;
+      });
       emitter.on('data', this.ondata);
       emitter.on('close', this.onclose);
-      if (interval > 0 && maxRetry > 1) {
+      if (interval > 0 && this.retryCount > 1) {
         emitter.on('close', function () {
           emitter.destroy();
           _this2.emit('reconnecting');
           setTimeout(function () {
-            _this2.reconnect(interval, maxRetry - 1);
+            _this2.reconnect(interval);
           }, interval);
         });
       }

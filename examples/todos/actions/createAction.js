@@ -1,4 +1,4 @@
-import { actionCreator, startReduxClient } from '../../../client'
+import { actionCreator, startReduxClient } from 'redux-sockjs'
 
 const channel = startReduxClient({
   port: 3010,

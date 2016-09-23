@@ -1,7 +1,7 @@
 import http from 'http'
 import { isFSA } from 'flux-standard-action'
 import remove from 'lodash/remove'
-import { startReduxServer } from '../../server'
+import { startReduxServer } from 'redux-sockjs/server'
 
 function isPromise(promise) {
   return promise && promise.then && typeof promise.then === 'function'
@@ -38,6 +38,7 @@ const destroy = id => {
  * that will transfer too many useless data
  * so just transfer needed data is ok
  * on server, I use half redux mode, only use the action idea of redux
+ * when there is a redux store on server, only one server process is ok, when use pm2 or cluster, the state between server processes are hard to sync.
  * */
 
 const actions = {
@@ -48,6 +49,7 @@ const actions = {
 
 const broadcast = reduxChannel.broadcast.bind(reduxChannel)
 reduxChannel.receive(action => {
+  console.log(action)
   const result = actions[action.type](action)
   if (isPromise(result.payload)) {
     result.payload.then(data => {
